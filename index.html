@@ -120,12 +120,13 @@
         .cancel-btn { background: #f1f2f6; color: #555; }
         .confirm-btn { background: #25D366; color: white; }
 
-        /* --- FIX: Mobile Responsiveness & Sticky Header --- */
+       /* --- FIX: Mobile Responsiveness & Sticky Header --- */
         @media (max-width: 768px) {
             body { 
                 display: block; /* Switch off flex layout to allow native scrolling */
                 height: auto; 
                 overflow-x: hidden; /* Stops horizontal shift/zooming */
+                overflow-y: auto; /* <-- THIS RE-ENABLES VERTICAL SCROLLING */
             }
             .sidebar { 
                 width: 100%; 

@@ -152,7 +152,31 @@
     <!-- Sidebar Navigation -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <img src="https://placehold.co/100x100/2c3e50/white?text=SF" alt="Sasreya Logo" class="brand-logo">
+            <!-- Animated SVG Logo -->
+            <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="background: #2c3e50; padding: 5px; box-sizing: border-box;">
+                <style>
+                    .float { animation: float 3s ease-in-out infinite; transform-origin: 50px 50px; }
+                    .wiggle { animation: wiggle 2s ease-in-out infinite; transform-origin: 50px 50px; }
+                    @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-6px) rotate(5deg); } }
+                    @keyframes wiggle { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+                </style>
+                
+                <!-- Pickle Jar (Wiggling) -->
+                <g class="wiggle">
+                    <!-- Jar Body -->
+                    <rect x="18" y="40" width="40" height="45" rx="8" fill="#f1c40f" />
+                    <!-- Jar Lid -->
+                    <rect x="14" y="30" width="48" height="12" rx="3" fill="#e74c3c" />
+                    <!-- Label -->
+                    <rect x="25" y="52" width="26" height="18" rx="3" fill="#fff" opacity="0.9"/>
+                    <text x="38" y="65" font-family="Arial" font-size="12" font-weight="bold" fill="#2c3e50" text-anchor="middle">SF</text>
+                </g>
+                
+                <!-- Golden Chip (Floating) -->
+                <g class="float">
+                    <path d="M 60 30 Q 75 15 90 40 Q 80 60 65 50 Q 50 40 60 30" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                </g>
+            </svg>
             <h2 class="brand-name">Sasreya Foods</h2>
         </div>
         <p>Homemade Pickles & Snacks</p>

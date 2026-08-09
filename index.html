@@ -29,7 +29,8 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- Zepto-Style Products Grid --- */
-        .products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; } /* Default 2 columns for mobile */
+        /* FIX: Added minmax(0, 1fr) to force perfectly equal columns */
+        .products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } 
         
         @media (min-width: 768px) {
             .products { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
@@ -85,7 +86,7 @@
         .modal-qty-controls button { width: 30%; background: transparent; color: #e74c3c; font-size: 1.8em; border: none; cursor: pointer; height: 100%; font-weight: bold;}
         .modal-qty-controls span { width: 40%; font-weight: bold; text-align: center; font-size: 1.2em; color: #e74c3c;}
 
-        /* --- Cart & Checkout Modals (Kept Original Styling) --- */
+        /* --- Cart & Checkout Modals --- */
         .cart-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .cart-item-details { text-align: left; }
@@ -97,7 +98,7 @@
 
         .whatsapp-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1em; margin-top: 20px;}
         
-        .floating-cart { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; background: #2ecc71; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4); border: none; z-index: 1000; transition: transform 0.2s;}
+        .floating-cart { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; background: #2ecc71; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4); border: none; z-index: 1001; transition: transform 0.2s;}
         .floating-badge { position: absolute; top: -2px; right: -2px; background: #e74c3c; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
 
         .loader-container { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 0; color: #777; }
@@ -107,7 +108,6 @@
         /* Checkout Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
         .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .modal-content h3 { margin-top: 0; color: #2c3e50; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
         .input-group { margin-bottom: 15px; }
@@ -120,13 +120,27 @@
         .cancel-btn { background: #f1f2f6; color: #555; }
         .confirm-btn { background: #25D366; color: white; }
 
+        /* --- FIX: Mobile Responsiveness & Sticky Header --- */
         @media (max-width: 768px) {
-            body { flex-direction: column; overflow: auto;}
-            .sidebar { width: 100%; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+            body { 
+                display: block; /* Switch off flex layout to allow native scrolling */
+                height: auto; 
+                overflow-x: hidden; /* Stops horizontal shift/zooming */
+            }
+            .sidebar { 
+                width: 100%; 
+                padding: 15px; 
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+                position: sticky; /* Locks it to the top */
+                top: 0; 
+                z-index: 1000; 
+                background: white;
+            }
             .sidebar-header { justify-content: flex-start; margin-bottom: 5px; }
             .sidebar p { display: block; margin-top: 0; margin-bottom: 15px; text-align: left; } 
             .nav-links { flex-direction: row; gap: 10px; }
             .nav-btn { flex: 1; padding: 10px; font-size: 1em; justify-content: center; gap: 8px;}
+            
             .main-content { padding: 15px; overflow-y: visible; }
             .cart-container { padding: 15px; }
         }
@@ -178,7 +192,7 @@
         🛒 <span class="floating-badge" id="floating-badge">0</span>
     </button>
 
-    <!-- NEW: Product Details Modal -->
+    <!-- Product Details Modal -->
     <div class="product-modal-overlay" id="product-modal-overlay" onclick="closeProductModalOutside(event)">
         <div class="product-modal-content">
             <div class="product-modal-img-container">
@@ -262,7 +276,6 @@
             window.scrollTo(0, 0); 
         }
 
-        // --- NEW: Card UI Generation ---
         function displayProducts() {
             const productList = document.getElementById('product-list');
             productList.innerHTML = ''; 
@@ -270,13 +283,11 @@
             globalProducts.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                // The entire card opens the modal EXCEPT the inputs which stop propagation
                 card.onclick = () => openProductModal(index);
                 
                 card.innerHTML = `
                     <div class="image-container">
                         <img src="${product.image}" alt="${product.name}">
-                        <!-- The floating + button sits exactly on the bottom edge -->
                         <div id="action-${index}" class="action-container" onclick="event.stopPropagation()"></div>
                     </div>
                     <h3 class="product-title">${product.name}</h3>
@@ -303,14 +314,12 @@
             document.getElementById(`weight-${index}`).focus();
         }
 
-        // --- NEW: Card Edge Add Button Logic ---
         function updateCardActionUI(index) {
             const select = document.getElementById(`weight-${index}`);
             const actionContainer = document.getElementById(`action-${index}`);
             const priceContainer = document.getElementById(`price-${index}`);
             const product = globalProducts[index];
             
-            // If no weight selected, show basic Plus button
             if (select.value === "") {
                 priceContainer.innerText = `₹${product.price}/kg`; 
                 actionContainer.innerHTML = `<button class="add-plus-btn" onclick="event.stopPropagation(); promptSelection(${index})">+</button>`;
@@ -324,7 +333,6 @@
             priceContainer.innerText = `₹${currentPrice}`;
             const cartItem = cart.find(i => i.name === product.name && i.weightLabel === weightLabel);
 
-            // If item is in cart, show tiny Pill, otherwise show Add Plus
             if (cartItem) {
                 actionContainer.innerHTML = `
                     <div class="tiny-qty" onclick="event.stopPropagation()">
@@ -338,7 +346,6 @@
             }
         }
 
-        // --- NEW: Detailed Product Modal Logic ---
         function openProductModal(index) {
             currentModalProductIndex = index;
             const product = globalProducts[index];
@@ -347,18 +354,17 @@
             document.getElementById('modal-title').innerText = product.name;
             document.getElementById('modal-desc').innerText = product.description;
             
-            // Sync the modal dropdown with whatever was selected on the small card
             const cardSelect = document.getElementById(`weight-${index}`);
             document.getElementById('modal-weight').value = cardSelect.value;
             
             updateModalUI();
             document.getElementById('product-modal-overlay').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Stop background scrolling
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeProductModal() {
             document.getElementById('product-modal-overlay').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restore scrolling
+            document.body.style.overflow = ''; 
         }
 
         function closeProductModalOutside(event) {
@@ -374,7 +380,6 @@
             const priceContainer = document.getElementById('modal-price');
             const actionContainer = document.getElementById('modal-action-container');
             
-            // Keep the background card synced with the modal selection!
             document.getElementById(`weight-${index}`).value = select.value;
             
             if (select.value === "") {
@@ -404,11 +409,9 @@
                 actionContainer.innerHTML = `<button class="big-add-btn" onclick="addToCart(${index}, ${currentPrice}); updateModalUI();">Add to Cart</button>`;
             }
             
-            // Update the background card to match the changes made in the modal
             updateCardActionUI(index);
         }
 
-        // --- Shared Cart Logic ---
         function addToCart(index, calculatedPrice) {
             const select = document.getElementById(`weight-${index}`);
             const weightLabel = select.options[select.selectedIndex].text;
@@ -478,13 +481,11 @@
                 if (document.getElementById(`weight-${index}`)) updateCardActionUI(index);
             });
             
-            // If modal is open, ensure it syncs too
             if (currentModalProductIndex !== null && document.getElementById('product-modal-overlay').style.display === 'flex') {
                 updateModalUI();
             }
         }
 
-        // --- Checkout Modal & Form Submit ---
         function openCheckoutModal() {
             if (cart.length === 0) { alert("Please add items to your cart first!"); switchTab('products'); return; }
             document.getElementById('checkout-modal').style.display = 'flex';

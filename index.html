@@ -3,293 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sasreya Admin - Settlement</title>
+    <title>Sasreya Foods</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f0f2f5; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background-color: #f4f6f8; overflow: hidden; }
         
-        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;}
+        /* --- Sidebar Navigation --- */
+        .sidebar { width: 250px; background: #fff; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
         
-        /* Order List */
-        .order-list { margin-bottom: 20px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fafafa;}
-        .order-row { display: flex; align-items: flex-start; gap: 15px; padding: 15px; border-bottom: 1px solid #eee; background: white; margin-bottom: 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;}
-        .order-row:hover { background: #f0fdf4; }
-        .order-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #2ecc71; margin-top: 3px; cursor: pointer;}
+        .sidebar-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
+        .brand-logo { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.15); border: 1px solid #eaeaea; }
+        .brand-name { color: #2c3e50; margin: 0; font-size: 1.5em; text-align: left; font-weight: 800; letter-spacing: -0.5px; } 
         
-        .order-details { flex: 1; }
-        .order-details strong { display: block; font-size: 1.1em; color: #2c3e50; }
-        .order-details small { color: #777; }
-        .order-price { font-size: 1.2em; font-weight: bold; color: #2ecc71; }
+        .sidebar p { text-align: center; color: #777; font-size: 0.85em; margin-bottom: 30px; margin-top: 5px; }
+        
+        .nav-links { display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn { background: transparent; color: #555; border: none; padding: 12px 15px; border-radius: 8px; font-size: 1.1em; cursor: pointer; text-align: left; font-weight: bold; transition: 0.2s; display: flex; justify-content: space-between; align-items: center;}
+        .nav-btn:hover { background: #f0fdf4; color: #2ecc71; }
+        .nav-btn.active { background: #2ecc71; color: white; }
+        .nav-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; display: none; }
 
-        /* Calculator Section */
-        .calculator { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef; }
+        /* --- Main Content Area --- */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .view { display: none; animation: fadeIn 0.3s; }
+        .view.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Products Grid --- */
+        .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }
+        .product-card img { max-width: 100%; border-radius: 8px; height: 160px; object-fit: cover; }
+        .price { font-size: 1.2em; font-weight: bold; color: #2ecc71; margin: 5px 0; }
         
-        .item-breakdown-container { margin: 15px 0; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #eee; font-size: 0.95em;}
-        .item-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .item-row input { width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 5px; text-align: right; font-weight: bold;}
+        .weight-select { width: 100%; padding: 8px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd; font-family: inherit; font-size: 1em; outline: none; }
+        .action-btn { background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;}
+        .action-btn:hover { background: #2980b9; }
         
-        .calc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 1.1em; }
-        .margin-row { color: #2980b9; font-weight: bold; }
-        .total-pay { font-size: 1.4em; font-weight: bold; color: #e74c3c; border-top: 2px dashed #ccc; padding-top: 15px; margin-top: 10px; }
+        .qty-controls { display: flex; align-items: center; justify-content: space-between; background: #f1f1f1; border-radius: 6px; height: 39px; overflow: hidden;}
+        .qty-controls button { width: 35%; background: transparent; color: #333; font-size: 1.2em; border: none; cursor: pointer; height: 100%; transition: 0.2s; }
+        .qty-controls button:hover { background: #e2e2e2; }
+        .qty-controls span { width: 30%; font-weight: bold; text-align: center; }
+
+        /* --- Cart Section --- */
+        .cart-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .cart-item-details { text-align: left; }
+        .cart-item-details small { color: #777; display: block; margin-top: 4px;}
+        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1em; margin-top: 20px; transition: 0.2s;}
+        .whatsapp-btn:hover { background: #20b858; }
+
+        /* --- Floating Cart Button --- */
+        .floating-cart {
+            position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; background: #2ecc71; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4); border: none; z-index: 1000; transition: transform 0.2s;
+        }
+        .floating-cart:hover { transform: scale(1.05); }
+        .floating-badge { position: absolute; top: -2px; right: -2px; background: #e74c3c; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+
+        .loader-container { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 0; color: #777; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid #2ecc71; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- NEW: Checkout Modal (Mobile Friendly) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        button { background: #25D366; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1em; margin-top: 20px; transition: 0.2s; }
-        button:hover { background: #20b858; }
+        .modal-content h3 { margin-top: 0; color: #2c3e50; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
+        .input-group { margin-bottom: 15px; }
+        .input-group input[type="text"], .input-group input[type="tel"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em; font-family: inherit; outline: none; transition: 0.2s;}
+        .input-group input:focus { border-color: #2ecc71; }
         
-        .loader { text-align: center; color: #777; padding: 20px; }
+        /* The Wizzmoni Checkbox Area */
+        .radio-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #2ecc71; cursor: pointer;}
+        .radio-group label { cursor: pointer; font-weight: bold; color: #2c3e50; flex: 1;}
+        .radio-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: #2ecc71; cursor: pointer; }
+
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions button { flex: 1; padding: 12px; font-size: 1.1em; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; transition: 0.2s;}
+        .cancel-btn { background: #f1f2f6; color: #555; }
+        .cancel-btn:hover { background: #e2e2e2; }
+        .confirm-btn { background: #25D366; color: white; }
+        .confirm-btn:hover { background: #20b858; }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto;}
+            .sidebar { width: 100%; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+            .sidebar-header { justify-content: flex-start; margin-bottom: 5px; }
+            .sidebar p { display: block; margin-top: 0; margin-bottom: 15px; text-align: left; } 
+            .nav-links { flex-direction: row; gap: 10px; }
+            .nav-btn { flex: 1; padding: 10px; font-size: 1em; justify-content: center; gap: 8px;}
+            .main-content { padding: 15px; overflow-y: visible; }
+            .cart-container { padding: 15px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Sasreya Settlement Calculator</h1>
-        <p style="color: #666; margin-bottom: 20px;">Select orders to automatically calculate weights and margins.</p>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://placehold.co/100x100/e67e22/white?text=SF" alt="Sasreya Logo" class="brand-logo">
+            <h2 class="brand-name">Sasreya Foods</h2>
+        </div>
+        <p>Homemade Pickles & Snacks</p>
+        <div class="nav-links">
+            <button class="nav-btn active" id="nav-products" onclick="switchTab('products')">🛍️ Products</button>
+            <button class="nav-btn" id="nav-cart" onclick="switchTab('cart')">🛒 Cart <span class="nav-badge" id="nav-cart-badge">0</span></button>
+        </div>
+    </div>
 
-        <div class="order-list" id="order-list">
-            <div class="loader">Fetching latest orders...</div>
+    <!-- Main Content Area -->
+    <div class="main-content">
+        
+        <!-- Products View -->
+        <div id="products-tab" class="view active">
+            <div class="products" id="product-list">
+                <div class="loader-container">
+                    <div class="spinner"></div>
+                    <p>Loading fresh items from the kitchen...</p>
+                </div>
+            </div>
         </div>
 
-        <div class="calculator">
-            <div class="calc-row">
-                <span>Customer Total Paid:</span>
-                <strong>₹<span id="cust-total">0</span></strong>
+        <!-- Cart View -->
+        <div id="cart-tab" class="view">
+            <div class="cart-container">
+                <h2 style="margin-top: 0; color: #333;">Your Shopping Cart</h2>
+                <div id="cart-items">
+                    <p style="color: #777;">Your cart is empty.</p>
+                </div>
+                <h3 style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px;">
+                    Total Amount: ₹<span id="cart-total">0</span>
+                </h3>
+                
+                <!-- Changed this button to open the modal instead of checking out immediately -->
+                <button class="whatsapp-btn" onclick="openCheckoutModal()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Floating Button -->
+    <button class="floating-cart" id="floating-cart" onclick="switchTab('cart')">
+        🛒 <span class="floating-badge" id="floating-badge">0</span>
+    </button>
+
+    <!-- NEW: The Checkout Details Modal -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-content">
+            <h3>Delivery Details</h3>
+            
+            <div class="input-group">
+                <input type="text" id="cust-name" placeholder="Your Name" required>
             </div>
             
-            <!-- Smart Item Breakdown Goes Here -->
-            <div id="item-breakdown" class="item-breakdown-container">
-                <span style="color: #999; font-size: 0.9em;">Select an order above to see the item breakdown.</span>
+            <div class="input-group">
+                <input type="tel" id="cust-phone" placeholder="Phone / WhatsApp Number" required>
             </div>
-
-            <div class="calc-row margin-row">
-                <span>My Total Charge (Margin):</span>
-                <span>₹<span id="my-commission">0</span></span>
+            
+            <!-- The Wizzmoni Toggle -->
+            <label class="radio-group">
+                <input type="checkbox" id="is-wizzmoni" onchange="togglePlaceInput()">
+                <span>I am from Wizzmoni</span>
+            </label>
+            
+            <!-- Place Input (Will hide if Wizzmoni is checked) -->
+            <div class="input-group" id="place-container">
+                <input type="text" id="cust-place" placeholder="Your Location / Place" required>
             </div>
-
-            <div class="calc-row total-pay">
-                <span>Final Amount to Send Seller:</span>
-                <span>₹<span id="seller-total">0</span></span>
+            
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeCheckoutModal()">Cancel</button>
+                <button class="confirm-btn" onclick="submitOrder()">Send Order</button>
             </div>
         </div>
-
-        <button onclick="sendReceiptToSeller()">Send Receipt via WhatsApp ✅</button>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const RESPONSES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMoaZvcXqrD0KWIEHEOdCFjHUMNu9NMUkhJxOoir9fDwMNJtO55Lkp1C4vWAgXlVbJ8v1BIz7CtiuU/pub?output=csv'; 
-        const SELLER_WHATSAPP_NUMBER = '918590360735'; 
+        // --- 1. CONFIGURATION ---
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQkdpMJkEjlGqWVQmKUy9GZk_tabKkAxxgDrW5SGpe2r3vL-uoWOInuvhomxTdsrihJEhqfKvAQHFAK/pub?output=csv'; 
+        const WHATSAPP_NUMBER = '919446195202'; 
 
-        let parsedOrders = [];
-        let currentAggregatedItems = {}; // Holds items from checked boxes
-        let sellerRates = {}; // Remembers the rates you type in so they don't reset
+        // --- 2. APP LOGIC ---
+        let cart = [];
+        let globalProducts = []; 
 
-        // Fetch Orders from Google Sheets
-        Papa.parse(RESPONSES_CSV_URL, {
+        Papa.parse(SHEET_CSV_URL, {
             download: true,
             header: true,
             complete: function(results) {
-                processOrders(results.data);
+                globalProducts = results.data.filter(p => p.name); 
+                displayProducts();
             }
         });
 
-        // Helper to turn "250 g" into 0.25 (kg)
-        function parseWeightToKg(sizeStr) {
-            const numMatch = sizeStr.match(/[\d.]+/);
-            if (!numMatch) return 1;
-            const num = parseFloat(numMatch[0]);
-            if (sizeStr.toLowerCase().includes('g') && !sizeStr.toLowerCase().includes('kg')) {
-                return num / 1000;
-            }
-            return num; // assume kg
-        }
-
-        function processOrders(data) {
-            const listContainer = document.getElementById('order-list');
-            listContainer.innerHTML = ''; 
+        function switchTab(tabId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(tabId + '-tab').classList.add('active');
             
-            const validOrders = data.reverse().filter(row => Object.values(row).join('').trim().length > 0);
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('nav-' + tabId).classList.add('active');
+            window.scrollTo(0, 0); 
+        }
 
-            if (validOrders.length === 0) {
-                listContainer.innerHTML = '<p>No orders found yet.</p>';
-                return;
-            }
+        function displayProducts() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = ''; 
 
-            validOrders.forEach((row, index) => {
-                const keys = Object.keys(row);
-                const timestampVal = row[keys[0]]; 
-                const rawText = row[keys[1]];      
-
-                if (!rawText) return; 
-
-                // 1. Get Name and Total
-                const nameMatch = rawText.match(/\*Name:\* (.*?)(?:\r?\n|$)/);
-                const totalMatch = rawText.match(/\*Total Amount: ₹(\d+)\*/);
-                
-                const customerName = nameMatch ? nameMatch[1].trim() : 'Unknown Customer';
-                const orderTotal = totalMatch ? parseInt(totalMatch[1]) : 0;
-                const shortDate = timestampVal ? timestampVal.split(' ')[0] : 'Unknown Date';
-                
-                // 2. EXTRACTION MAGIC: Find all items in this order
-                const itemsList = [];
-                // Looks for: ▪ 1 x Beef pickle [Size: 250 g] = ₹500
-                const itemRegex = /▪ (\d+) x (.*?) \[Size: (.*?)\] = ₹(\d+)/g;
-                let match;
-                while ((match = itemRegex.exec(rawText)) !== null) {
-                    itemsList.push({
-                        qty: parseInt(match[1]),
-                        name: match[2].trim(),
-                        sizeLabel: match[3].trim(),
-                        weightInKg: parseWeightToKg(match[3].trim()),
-                        totalPaid: parseInt(match[4])
-                    });
-                }
-
-                // Store processed order
-                parsedOrders.push({
-                    id: index,
-                    date: shortDate,
-                    name: customerName,
-                    total: orderTotal,
-                    items: itemsList
-                });
-
-                // Create UI row
-                const div = document.createElement('div');
-                div.className = 'order-row';
-                div.innerHTML = `
-                    <input type="checkbox" id="order-${index}" value="${index}" onchange="handleCheckboxChange()">
-                    <div class="order-details" onclick="document.getElementById('order-${index}').click()">
-                        <strong>${customerName}</strong>
-                        <small>${timestampVal}</small>
-                    </div>
-                    <div class="order-price">₹${orderTotal}</div>
+            globalProducts.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3 style="margin: 10px 0 5px 0;">${product.name}</h3>
+                    <p style="font-size: 0.85em; color: #777; margin-bottom: 10px; height: 34px; overflow: hidden;">${product.description}</p>
+                    
+                    <select id="weight-${index}" class="weight-select" onchange="updateCardActionUI(${index})">
+                        <option value="" disabled selected>-- choose quantity --</option>
+                        <option value="0.25">250 g</option>
+                        <option value="0.5">500 g</option>
+                        <option value="1">1 kg</option>
+                        <option value="2">2 kg</option>
+                    </select>
+                    
+                    <div class="price" id="price-${index}">₹${product.price} / kg</div>
+                    <div id="action-${index}"></div>
                 `;
-                listContainer.appendChild(div);
+                productList.appendChild(card);
+                updateCardActionUI(index); 
             });
         }
 
-        // Triggered whenever a box is checked or unchecked
-        function handleCheckboxChange() {
-            currentAggregatedItems = {}; // Reset
-
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            checkboxes.forEach(box => {
-                const order = parsedOrders[box.value];
-                
-                // Group identical items together across multiple orders
-                order.items.forEach(item => {
-                    if (!currentAggregatedItems[item.name]) {
-                        currentAggregatedItems[item.name] = { totalWeightKg: 0, customerTotalPaid: 0 };
-                    }
-                    const totalItemWeight = item.qty * item.weightInKg;
-                    currentAggregatedItems[item.name].totalWeightKg += totalItemWeight;
-                    currentAggregatedItems[item.name].customerTotalPaid += item.totalPaid;
-                });
-            });
-
-            renderItemBreakdown();
-            updateTotals();
+        function promptSelection(index) {
+            alert("Please choose a quantity first!");
+            document.getElementById(`weight-${index}`).focus();
         }
 
-        // Draws the Seller Rate inputs based on the items in the checked orders
-        function renderItemBreakdown() {
-            const container = document.getElementById('item-breakdown');
-            container.innerHTML = '';
-
-            if (Object.keys(currentAggregatedItems).length === 0) {
-                container.innerHTML = '<span style="color: #999; font-size: 0.9em;">Select an order above to see the item breakdown.</span>';
-                return;
+        function updateCardActionUI(index) {
+            const select = document.getElementById(`weight-${index}`);
+            const actionContainer = document.getElementById(`action-${index}`);
+            const priceContainer = document.getElementById(`price-${index}`);
+            const product = globalProducts[index];
+            
+            if (select.value === "") {
+                priceContainer.innerText = `₹${product.price} / kg`; 
+                actionContainer.innerHTML = `<button class="action-btn" onclick="promptSelection(${index})">Add to Cart</button>`;
+                return; 
             }
 
-            for (const [name, data] of Object.entries(currentAggregatedItems)) {
-                // Figure out what the customer paid per kg, to use as the default seller rate
-                const defaultRatePerKg = Math.round(data.customerTotalPaid / data.totalWeightKg);
-                
-                // If we haven't typed a custom rate for this item yet, use the default
-                if (sellerRates[name] === undefined) {
-                    sellerRates[name] = defaultRatePerKg;
-                }
+            const weightLabel = select.options[select.selectedIndex].text;
+            const weightMultiplier = parseFloat(select.value);
+            const basePrice = parseFloat(product.price);
+            const currentPrice = Math.round(basePrice * weightMultiplier);
+            
+            priceContainer.innerText = `₹${currentPrice}`;
+            const cartItem = cart.find(i => i.name === product.name && i.weightLabel === weightLabel);
 
-                container.innerHTML += `
-                    <div class="item-row">
-                        <div>
-                            <strong>${name}</strong><br>
-                            <small style="color: #777;">Total Sold: ${data.totalWeightKg} kg</small>
-                        </div>
-                        <div style="text-align: right;">
-                            <small style="color: #777;">Seller Rate / kg:</small><br>
-                            ₹ <input type="number" 
-                                value="${sellerRates[name]}" 
-                                onchange="updateSellerRate('${name}', this.value)">
-                        </div>
+            if (cartItem) {
+                actionContainer.innerHTML = `
+                    <div class="qty-controls">
+                        <button onclick="updateQtyFromCard(${index}, -1)">-</button>
+                        <span>${cartItem.qty}</span>
+                        <button onclick="updateQtyFromCard(${index}, 1)">+</button>
                     </div>
                 `;
+            } else {
+                actionContainer.innerHTML = `<button class="action-btn" onclick="addToCart(${index}, ${currentPrice})">Add to Cart</button>`;
             }
         }
 
-        // Triggered when you type a new seller rate
-        function updateSellerRate(itemName, newRate) {
-            sellerRates[itemName] = parseFloat(newRate) || 0;
-            updateTotals();
+        function addToCart(index, calculatedPrice) {
+            const select = document.getElementById(`weight-${index}`);
+            const weightLabel = select.options[select.selectedIndex].text;
+            const product = globalProducts[index];
+
+            cart.push({ name: product.name, weightLabel: weightLabel, price: calculatedPrice, qty: 1 });
+            updateCartUI();
         }
 
-        // Calculates the final numbers based on the weights and the seller rates
-        function updateTotals() {
-            let customerTotal = 0;
-            let sellerTotal = 0;
+        function updateQtyFromCard(index, change) {
+            const select = document.getElementById(`weight-${index}`);
+            changeCartQty(globalProducts[index].name, select.options[select.selectedIndex].text, change);
+        }
 
-            // Calculate based on the items
-            for (const [name, data] of Object.entries(currentAggregatedItems)) {
-                customerTotal += data.customerTotalPaid;
-                sellerTotal += (data.totalWeightKg * sellerRates[name]);
+        function changeCartQty(name, weightLabel, change) {
+            const itemIndex = cart.findIndex(i => i.name === name && i.weightLabel === weightLabel);
+            if (itemIndex > -1) {
+                cart[itemIndex].qty += change;
+                if (cart[itemIndex].qty <= 0) cart.splice(itemIndex, 1); 
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartItemsContainer.innerHTML = '';
+            let totalMoney = 0;
+            let totalItems = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="color: #777;">Your cart is empty.</p>';
+            } else {
+                cart.forEach(item => {
+                    totalMoney += item.price * item.qty;
+                    totalItems += item.qty;
+                    cartItemsContainer.innerHTML += `
+                        <div class="cart-item">
+                            <div class="cart-item-details">
+                                <strong style="font-size: 1.1em;">${item.name}</strong>
+                                <small>${item.weightLabel} - ₹${item.price}</small>
+                            </div>
+                            <div class="qty-controls" style="width: 90px; height: 35px; background: #fff; border: 1px solid #ddd;">
+                                <button onclick="changeCartQty('${item.name}', '${item.weightLabel}', -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button onclick="changeCartQty('${item.name}', '${item.weightLabel}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
             }
 
-            const myCommission = customerTotal - sellerTotal;
+            cartTotal.innerText = totalMoney;
 
-            document.getElementById('cust-total').innerText = customerTotal;
-            document.getElementById('seller-total').innerText = Math.round(sellerTotal);
-            document.getElementById('my-commission').innerText = Math.round(myCommission);
+            const floatingBtn = document.getElementById('floating-cart');
+            const floatingBadge = document.getElementById('floating-badge');
+            const navBadge = document.getElementById('nav-cart-badge');
+
+            if (totalItems > 0) {
+                floatingBtn.style.display = 'flex';
+                floatingBadge.innerText = totalItems;
+                navBadge.style.display = 'inline-block';
+                navBadge.innerText = totalItems;
+            } else {
+                floatingBtn.style.display = 'none';
+                navBadge.style.display = 'none';
+            }
+
+            globalProducts.forEach((_, index) => {
+                if (document.getElementById(`weight-${index}`)) updateCardActionUI(index);
+            });
         }
 
-        // Sends the highly detailed, professional receipt to the seller
-        function sendReceiptToSeller() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            if (checkboxes.length === 0) {
-                alert("Please select at least one order to settle.");
+        // --- NEW: MODAL LOGIC & FORM SUBMISSION ---
+
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                alert("Please add items to your cart first!");
+                switchTab('products'); 
+                return;
+            }
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        // Logic for the Wizzmoni toggle checkbox
+        function togglePlaceInput() {
+            const isWizzmoni = document.getElementById('is-wizzmoni').checked;
+            const placeContainer = document.getElementById('place-container');
+            const placeInput = document.getElementById('cust-place');
+            
+            if (isWizzmoni) {
+                placeContainer.style.display = 'none';
+                placeInput.value = 'Wizzmoni, deliver via Rethish'; // Set automatically behind the scenes
+            } else {
+                placeContainer.style.display = 'block';
+                placeInput.value = ''; // Clear it out
+            }
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const place = document.getElementById('cust-place').value.trim();
+
+            if (!name || !phone || !place) {
+                alert("Please fill in all details before sending the order.");
                 return;
             }
 
-            let customerTotal = parseInt(document.getElementById('cust-total').innerText);
-            let sellerTotal = parseInt(document.getElementById('seller-total').innerText);
-            let myCommission = parseInt(document.getElementById('my-commission').innerText);
-
-            let msg = `Payment Processed ✅\n\n`;
+	    const cleanPhone = phone.replace(/[\s\-\+]/g, ''); 
+            // Checks for standard 10-digit Indian mobile number (optionally starting with 91 or 0)
+            const phoneRegex = /^(?:91|0)?[6-9]\d{9}$/; 
             
-            msg += `*Settled Orders:*\n`;
-            checkboxes.forEach((box, i) => {
-                const order = parsedOrders[box.value];
-                msg += `${i + 1}. ${order.name} - ₹${order.total} (${order.date})\n`;
+            if (!phoneRegex.test(cleanPhone)) {
+                alert("Please enter a valid mobile number.");
+                document.getElementById('cust-phone').focus();
+                return; // Stop the checkout process
+            }	
+
+            // Build the final message (includes Name, Phone, and Place!)
+            let message = `Hello *Sasreya Foods*! 👋\nI would like to place an order. Here are my details:\n\n`;
+            message += `👤 *Name:* ${name}\n`;
+            message += `📞 *Phone:* ${phone}\n`;
+            message += `📍 *Place:* ${place}\n`;
+            message += `-------------------------------------\n`;
+            message += `*My Order Items:*\n`;
+            
+            let total = 0;
+            cart.forEach(item => {
+                message += `▪ ${item.qty} x ${item.name} [Size: ${item.weightLabel}] = ₹${item.price * item.qty}\n`;
+                total += item.price * item.qty;
             });
 
-            msg += `\n*Item Breakdown & Rates:*\n`;
-            for (const [name, data] of Object.entries(currentAggregatedItems)) {
-                const rate = sellerRates[name];
-                const lineTotal = Math.round(data.totalWeightKg * rate);
-                msg += `▪ ${name}: ${data.totalWeightKg}kg @ ₹${rate}/kg = ₹${lineTotal}\n`;
-            }
+            message += `\n*Total Amount: ₹${total}*\n`;
+	    
+	    const currentYear = new Date().getFullYear();
+            message += `\n*© ${currentYear} sasreya.netlify.app*\n`;
 
-            msg += `\n----------------------\n`;
-            msg += `Total Collected: ₹${customerTotal}\n`;
-            if (myCommission > 0) {
-                msg += `Platform/Admin Margin: -₹${myCommission}\n`;
-            }
-            msg += `----------------------\n`;
-            msg += `*Amount Sent to You: ₹${sellerTotal}*\n\n`;
-            msg += `_Please find the payment screenshot attached below._`;
+            // Google Form Auto-Save (Your correct IDs are here!)
+            const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfC6pjkbK86p4Yen5-X5t8Aga7N0DmUxoCJSpkbxgM1qeAFuQ/formResponse';
+            const ENTRY_ID = 'entry.1325426780';
 
-            const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+            const formData = new URLSearchParams();
+            formData.append(ENTRY_ID, message);
+
+            fetch(FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            }).then(() => {
+                console.log("Order saved.");
+            }).catch((error) => console.error("Error saving.", error));
+
+            // Open WhatsApp
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
+
+            // Reset Everything
+            cart = [];
+            document.getElementById('cust-name').value = '';
+            document.getElementById('cust-phone').value = '';
+            document.getElementById('cust-place').value = '';
+            document.getElementById('is-wizzmoni').checked = false;
+            togglePlaceInput(); // Reset UI
+            
+            closeCheckoutModal();
+            updateCartUI();
+            switchTab('products');
         }
     </script>
 </body>

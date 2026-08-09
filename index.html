@@ -12,7 +12,6 @@
         /* --- Sidebar Navigation --- */
         .sidebar { width: 250px; background: #fff; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
         .sidebar-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
-        .brand-logo { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.15); border: 1px solid #eaeaea; }
         .brand-name { color: #2c3e50; margin: 0; font-size: 1.5em; text-align: left; font-weight: 800; letter-spacing: -0.5px; } 
         .sidebar p { text-align: center; color: #777; font-size: 0.85em; margin-bottom: 30px; margin-top: 5px; }
         
@@ -28,8 +27,12 @@
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* --- NEW: Live Search Bar --- */
+        .search-container { margin-bottom: 20px; }
+        .search-input { width: 100%; padding: 14px 20px; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 1.05em; font-family: inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; }
+        .search-input:focus { border-color: #2ecc71; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2); }
+
         /* --- Zepto-Style Products Grid --- */
-        /* FIX: Added minmax(0, 1fr) to force perfectly equal columns */
         .products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } 
         
         @media (min-width: 768px) {
@@ -41,14 +44,11 @@
         /* Image & Floating Button Container */
         .image-container { position: relative; margin-bottom: 15px; }
         .product-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; display: block; background: #f9f9f9;}
-        
         .action-container { position: absolute; bottom: -12px; right: 8px; z-index: 5; }
         
-        /* Small Floating + Button */
+        /* Small Floating Controls */
         .add-plus-btn { width: 34px; height: 34px; background: white; color: #e74c3c; border: 1.5px solid #e74c3c; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.15); line-height: 0; padding-bottom: 2px; transition: 0.1s;}
         .add-plus-btn:hover { background: #e74c3c; color: white; }
-        
-        /* Small Floating Qty Pill */
         .tiny-qty { background: #e74c3c; color: white; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; width: 75px; height: 32px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); overflow: hidden; border: 1.5px solid #e74c3c;}
         .tiny-qty button { background: transparent; border: none; color: white; font-weight: bold; width: 25px; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center;}
         .tiny-qty span { font-weight: bold; font-size: 0.9em; }
@@ -56,7 +56,6 @@
         /* Typography & Controls */
         .product-title { font-size: 0.9em; margin: 0 0 3px 0; color: #2c3e50; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;}
         .product-desc { font-size: 0.75em; color: #777; margin: 0 0 8px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;}
-        
         .bottom-card-row { display: flex; flex-direction: column; gap: 5px; margin-top: auto; }
         .weight-select { width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 0.8em; outline: none; background: #fdfdfd;}
         .price { font-size: 0.95em; font-weight: bold; color: #333; margin: 0; }
@@ -120,34 +119,31 @@
         .cancel-btn { background: #f1f2f6; color: #555; }
         .confirm-btn { background: #25D366; color: white; }
 
-       /* --- FIX: Mobile Responsiveness & Sticky Header --- */
+        /* --- NEW: Toast Notification Styles --- */
+        .toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #2c3e50; color: white; padding: 14px 24px; border-radius: 30px; font-weight: bold; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; width: max-content; max-width: 90%; transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; font-size: 0.95em;}
+        .toast.show { top: 20px; }
+        
+        /* --- Mobile Responsiveness --- */
         @media (max-width: 768px) {
-            body { 
-                display: block; /* Switch off flex layout to allow native scrolling */
-                height: auto; 
-                overflow-x: hidden; /* Stops horizontal shift/zooming */
-                overflow-y: auto; /* <-- THIS RE-ENABLES VERTICAL SCROLLING */
-            }
-            .sidebar { 
-                width: 100%; 
-                padding: 15px; 
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-                position: sticky; /* Locks it to the top */
-                top: 0; 
-                z-index: 1000; 
-                background: white;
-            }
+            body { display: block; height: auto; overflow-x: hidden; overflow-y: auto; }
+            .sidebar { width: 100%; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; background: white;}
             .sidebar-header { justify-content: flex-start; margin-bottom: 5px; }
             .sidebar p { display: block; margin-top: 0; margin-bottom: 15px; text-align: left; } 
-            .nav-links { flex-direction: row; gap: 10px; }
-            .nav-btn { flex: 1; padding: 10px; font-size: 1em; justify-content: center; gap: 8px;}
+            
+            /* Add wrapping to accommodate the new share button */
+            .nav-links { flex-direction: row; gap: 10px; flex-wrap: wrap; }
+            .nav-btn { flex: 1; min-width: 30%; padding: 10px; font-size: 0.95em; justify-content: center; gap: 6px;}
             
             .main-content { padding: 15px; overflow-y: visible; }
             .cart-container { padding: 15px; }
+            .toast.show { top: 120px; } /* Ensures it drops below the sticky mobile header */
         }
     </style>
 </head>
 <body>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
@@ -183,6 +179,8 @@
         <div class="nav-links">
             <button class="nav-btn active" id="nav-products" onclick="switchTab('products')">🛍️ Products</button>
             <button class="nav-btn" id="nav-cart" onclick="switchTab('cart')">🛒 Cart <span class="nav-badge" id="nav-cart-badge">0</span></button>
+            <!-- NEW: Native Share Button -->
+            <button class="nav-btn" onclick="shareShop()" style="background: #f1f2f6; color: #2c3e50;">📤 Share</button>
         </div>
     </div>
 
@@ -190,6 +188,12 @@
     <div class="main-content">
         <!-- Products View -->
         <div id="products-tab" class="view active">
+            
+            <!-- NEW: Live Search Bar -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="🔍 Search for Pickles, Chips, powders..." onkeyup="filterProducts()">
+            </div>
+
             <div class="products" id="product-list">
                 <div class="loader-container">
                     <div class="spinner"></div>
@@ -243,7 +247,6 @@
                 </select>
                 
                 <div id="modal-action-container">
-                    <!-- Dynamic Add Button / Qty Controls inject here -->
                 </div>
             </div>
         </div>
@@ -282,6 +285,7 @@
         let cart = [];
         let globalProducts = []; 
         let currentModalProductIndex = null;
+        let toastTimeout; // Keeps track of the toast timer
 
         Papa.parse(SHEET_CSV_URL, {
             download: true,
@@ -291,6 +295,44 @@
                 displayProducts();
             }
         });
+
+        // --- NEW: Toast Function ---
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- NEW: Share Function ---
+        function shareShop() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Sasreya Foods',
+                    text: 'Check out these amazing homemade pickles and snacks from Sasreya Foods!',
+                    url: window.location.href 
+                }).catch(console.error);
+            } else {
+                // Fallback for desktops or older browsers
+                const shareUrl = `https://wa.me/?text=${encodeURIComponent("Check out Sasreya Foods: " + window.location.href)}`;
+                window.open(shareUrl, '_blank');
+            }
+        }
+
+        // --- NEW: Live Search Filter ---
+        function filterProducts() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+            
+            globalProducts.forEach((product, index) => {
+                const match = product.name.toLowerCase().includes(term) || product.description.toLowerCase().includes(term);
+                cards[index].style.display = match ? 'flex' : 'none';
+            });
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -335,7 +377,7 @@
         }
 
         function promptSelection(index) {
-            alert("Please choose a size first!");
+            showToast("Please choose a size first! 👆");
             document.getElementById(`weight-${index}`).focus();
         }
 
@@ -409,7 +451,7 @@
             
             if (select.value === "") {
                 priceContainer.innerText = `₹${product.price} / kg`;
-                actionContainer.innerHTML = `<button class="big-add-btn" onclick="alert('Please choose a size first!')">Add Item</button>`;
+                actionContainer.innerHTML = `<button class="big-add-btn" onclick="showToast('Please choose a size first! 👆')">Add Item</button>`;
                 updateCardActionUI(index); 
                 return;
             }
@@ -442,6 +484,7 @@
             const weightLabel = select.options[select.selectedIndex].text;
             const product = globalProducts[index];
             cart.push({ name: product.name, weightLabel: weightLabel, price: calculatedPrice, qty: 1 });
+            showToast(`Added ${product.name} to cart! 😋`);
             updateCartUI();
         }
 
@@ -454,7 +497,10 @@
             const itemIndex = cart.findIndex(i => i.name === name && i.weightLabel === weightLabel);
             if (itemIndex > -1) {
                 cart[itemIndex].qty += change;
-                if (cart[itemIndex].qty <= 0) cart.splice(itemIndex, 1); 
+                if (cart[itemIndex].qty <= 0) {
+                    cart.splice(itemIndex, 1);
+                    showToast("Item removed from cart.");
+                }
             }
             updateCartUI();
         }
@@ -512,7 +558,28 @@
         }
 
         function openCheckoutModal() {
-            if (cart.length === 0) { alert("Please add items to your cart first!"); switchTab('products'); return; }
+            if (cart.length === 0) { 
+                showToast("Your cart is empty! 🛒"); 
+                switchTab('products'); 
+                return; 
+            }
+
+            // Memory Check
+            const savedName = localStorage.getItem('sasreya_name');
+            const savedPhone = localStorage.getItem('sasreya_phone');
+            const savedPlace = localStorage.getItem('sasreya_place');
+            const isWizzmoniSaved = localStorage.getItem('sasreya_wizzmoni');
+
+            if (savedName) document.getElementById('cust-name').value = savedName;
+            if (savedPhone) document.getElementById('cust-phone').value = savedPhone;
+            
+            if (isWizzmoniSaved === 'true') {
+                document.getElementById('is-wizzmoni').checked = true;
+                togglePlaceInput(); 
+            } else if (savedPlace) {
+                document.getElementById('cust-place').value = savedPlace;
+            }
+
             document.getElementById('checkout-modal').style.display = 'flex';
         }
 
@@ -538,11 +605,26 @@
             const phone = document.getElementById('cust-phone').value.trim();
             const place = document.getElementById('cust-place').value.trim();
 
-            if (!name || !phone || !place) { alert("Please fill in all details before sending the order."); return; }
+            if (!name || !phone || !place) { 
+                showToast("Please fill in all details! 📝"); 
+                return; 
+            }
 
             const cleanPhone = phone.replace(/[\s\-\+]/g, ''); 
             const phoneRegex = /^(?:91|0)?[6-9]\d{9}$/; 
-            if (!phoneRegex.test(cleanPhone)) { alert("Please enter a valid 10-digit mobile number."); document.getElementById('cust-phone').focus(); return; }
+            if (!phoneRegex.test(cleanPhone)) { 
+                showToast("Invalid mobile number! 📱"); 
+                document.getElementById('cust-phone').focus(); 
+                return; 
+            }
+
+            // Save for Next Time
+            localStorage.setItem('sasreya_name', name);
+            localStorage.setItem('sasreya_phone', phone);
+            localStorage.setItem('sasreya_wizzmoni', document.getElementById('is-wizzmoni').checked);
+            if (!document.getElementById('is-wizzmoni').checked) {
+                localStorage.setItem('sasreya_place', place);
+            }
 
             let message = `Hello *Sasreya Foods*! 👋\nI would like to place an order. Here are my details:\n\n`;
             message += `👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n📍 *Place:* ${place}\n-------------------------------------\n*My Order Items:*\n`;
@@ -573,15 +655,10 @@
             window.open(whatsappUrl, '_blank');
 
             cart = [];
-            document.getElementById('cust-name').value = '';
-            document.getElementById('cust-phone').value = '';
-            document.getElementById('cust-place').value = '';
-            document.getElementById('is-wizzmoni').checked = false;
-            togglePlaceInput(); 
-            
             closeCheckoutModal();
             updateCartUI();
             switchTab('products');
+            showToast("Order Sent to WhatsApp! ✅");
         }
     </script>
 </body>

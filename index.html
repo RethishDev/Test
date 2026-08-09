@@ -172,7 +172,7 @@
             </svg>
             <h2 class="brand-name">Sasreya Foods</h2>
         </div>
-        <p>Homemade Pickles & Snacks</p>
+        <p>Complete homemade Pickles & Chips 💯</p>
         <div class="nav-links">
             <button class="nav-btn active" id="nav-products" onclick="switchTab('products')">🛍️ Products</button>
             <button class="nav-btn" id="nav-cart" onclick="switchTab('cart')">🛒 Cart <span class="nav-badge" id="nav-cart-badge">0</span></button>
@@ -274,7 +274,7 @@
     <script>
         // --- 1. CONFIGURATION ---
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQkdpMJkEjlGqWVQmKUy9GZk_tabKkAxxgDrW5SGpe2r3vL-uoWOInuvhomxTdsrihJEhqfKvAQHFAK/pub?output=csv'; 
-        const WHATSAPP_NUMBER = '918590360735'; 
+        const WHATSAPP_NUMBER = '919446195202'; 
 
         // --- 2. APP LOGIC ---
         let cart = [];
@@ -285,16 +285,21 @@
         // --- FIX: The Magic Malayalam Dictionary ---
         const malayalamDict = {
             "മാങ്ങ": "mango manga",
-            "അച്ചാർ": "pickle achar",
+            "അച്ചാർ": "pickle achar achaar",
             "ചമ്മന്തി": "chammanthi chutney",
             "പൊടി": "podi powder",
             "ചക്ക": "chakka jackfruit",
             "ഉപ്പേരി": "upperi chips",
             "കപ്പ": "kappa tapioca cassava",
             "മീൻ": "meen fish",
+            "മീനച്ചാർ": "meen fish pickle achar achaar",
             "ബീഫ്": "beef erachi",
             "ചുക്ക്": "chukku ginger dry",
-            "കാപ്പി": "kappi coffee"
+            "കാപ്പി": "kappi coffee kaappi",
+            "ഏത്തക്ക": "ethakka banana kaya kaaya",
+            "വറുത്തത്": "upperi chips fry",
+            "ശർക്കരപ്പരട്ടി": "sharkkaraperatti",
+            "കളിയടക്ക": "kaliyadakka kaliyodakka kadukadakka cheeda"
         };
 
         Papa.parse(SHEET_CSV_URL, {

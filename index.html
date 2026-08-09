@@ -12,6 +12,10 @@
         /* --- Sidebar Navigation --- */
         .sidebar { width: 250px; background: #fff; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
         .sidebar-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
+        
+        /* --- FIX: Restored Logo Size --- */
+        .brand-logo { width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0; }
+        
         .brand-name { color: #2c3e50; margin: 0; font-size: 1.5em; text-align: left; font-weight: 800; letter-spacing: -0.5px; } 
         .sidebar p { text-align: center; color: #777; font-size: 0.85em; margin-bottom: 30px; margin-top: 5px; }
         
@@ -130,13 +134,12 @@
             .sidebar-header { justify-content: flex-start; margin-bottom: 5px; }
             .sidebar p { display: block; margin-top: 0; margin-bottom: 15px; text-align: left; } 
             
-            /* Add wrapping to accommodate the new share button */
             .nav-links { flex-direction: row; gap: 10px; flex-wrap: wrap; }
             .nav-btn { flex: 1; min-width: 30%; padding: 10px; font-size: 0.95em; justify-content: center; gap: 6px;}
             
             .main-content { padding: 15px; overflow-y: visible; }
             .cart-container { padding: 15px; }
-            .toast.show { top: 120px; } /* Ensures it drops below the sticky mobile header */
+            .toast.show { top: 120px; } 
         }
     </style>
 </head>
@@ -149,28 +152,22 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <!-- Animated SVG Logo -->
-            <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="background: #2c3e50; padding: 5px; box-sizing: border-box;">
+            <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="background: white; border: 2px solid #e74c3c; box-sizing: border-box;">
                 <style>
-                    .float { animation: float 3s ease-in-out infinite; transform-origin: 50px 50px; }
-                    .wiggle { animation: wiggle 2s ease-in-out infinite; transform-origin: 50px 50px; }
-                    @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-6px) rotate(5deg); } }
-                    @keyframes wiggle { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+                    .spin { animation: spin 10s linear infinite; transform-origin: 50px 50px; }
+                    .pulse { animation: pulse 2s ease-in-out infinite; transform-origin: 50px 50px; }
+                    @keyframes spin { 100% { transform: rotate(360deg); } }
+                    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
                 </style>
-                
-                <!-- Pickle Jar (Wiggling) -->
-                <g class="wiggle">
-                    <!-- Jar Body -->
-                    <rect x="18" y="40" width="40" height="45" rx="8" fill="#f1c40f" />
-                    <!-- Jar Lid -->
-                    <rect x="14" y="30" width="48" height="12" rx="3" fill="#e74c3c" />
-                    <!-- Label -->
-                    <rect x="25" y="52" width="26" height="18" rx="3" fill="#fff" opacity="0.9"/>
-                    <text x="38" y="65" font-family="Arial" font-size="12" font-weight="bold" fill="#2c3e50" text-anchor="middle">SF</text>
+                <g class="spin">
+                    <circle cx="50" cy="50" r="42" fill="#f1c40f" />
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="#e67e22" stroke-width="4" stroke-dasharray="10 8" />
                 </g>
-                
-                <!-- Golden Chip (Floating) -->
-                <g class="float">
-                    <path d="M 60 30 Q 75 15 90 40 Q 80 60 65 50 Q 50 40 60 30" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                <g class="pulse">
+                    <circle cx="50" cy="50" r="26" fill="#ffffff" stroke="#e74c3c" stroke-width="3" />
+                    <text x="50" y="59" font-family="'Segoe UI', Tahoma, Arial, sans-serif" font-size="26" font-weight="900" fill="#e74c3c" text-anchor="middle" letter-spacing="-1">SF</text>
+                    <path d="M 68 32 Q 78 22 82 35 Q 72 45 68 32" fill="#2ecc71" stroke="#27ae60" stroke-width="1"/>
+                    <path d="M 32 68 Q 22 78 18 65 Q 28 55 32 68" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
                 </g>
             </svg>
             <h2 class="brand-name">Sasreya Foods</h2>
@@ -179,7 +176,6 @@
         <div class="nav-links">
             <button class="nav-btn active" id="nav-products" onclick="switchTab('products')">🛍️ Products</button>
             <button class="nav-btn" id="nav-cart" onclick="switchTab('cart')">🛒 Cart <span class="nav-badge" id="nav-cart-badge">0</span></button>
-            <!-- NEW: Native Share Button -->
             <button class="nav-btn" onclick="shareShop()" style="background: #f1f2f6; color: #2c3e50;">📤 Share</button>
         </div>
     </div>
@@ -189,9 +185,8 @@
         <!-- Products View -->
         <div id="products-tab" class="view active">
             
-            <!-- NEW: Live Search Bar -->
             <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="🔍 Search for Pickles, Chips, powders..." onkeyup="filterProducts()">
+                <input type="text" id="search-input" class="search-input" placeholder="🔍 Search for Pickles, Chips, Powders..." onkeyup="filterProducts()">
             </div>
 
             <div class="products" id="product-list">
@@ -285,18 +280,44 @@
         let cart = [];
         let globalProducts = []; 
         let currentModalProductIndex = null;
-        let toastTimeout; // Keeps track of the toast timer
+        let toastTimeout; 
+
+        // --- FIX: The Magic Malayalam Dictionary ---
+        const malayalamDict = {
+            "മാങ്ങ": "mango manga",
+            "അച്ചാർ": "pickle achar",
+            "ചമ്മന്തി": "chammanthi chutney",
+            "പൊടി": "podi powder",
+            "ചക്ക": "chakka jackfruit",
+            "ഉപ്പേരി": "upperi chips",
+            "കപ്പ": "kappa tapioca cassava",
+            "മീൻ": "meen fish",
+            "ബീഫ്": "beef erachi",
+            "ചുക്ക്": "chukku ginger dry",
+            "കാപ്പി": "kappi coffee"
+        };
 
         Papa.parse(SHEET_CSV_URL, {
             download: true,
             header: true,
             complete: function(results) {
-                globalProducts = results.data.filter(p => p.name); 
+                // Automatically attach English words to Malayalam titles so search works smoothly
+                globalProducts = results.data.filter(p => p.name).map(p => {
+                    let searchString = (p.name + " " + p.description).toLowerCase();
+                    
+                    for (const [mal, eng] of Object.entries(malayalamDict)) {
+                        if (p.name.includes(mal) || p.description.includes(mal)) {
+                            searchString += " " + eng;
+                        }
+                    }
+                    
+                    p.hiddenSearchText = searchString;
+                    return p;
+                }); 
                 displayProducts();
             }
         });
 
-        // --- NEW: Toast Function ---
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = message;
@@ -308,7 +329,6 @@
             }, 3000);
         }
 
-        // --- NEW: Share Function ---
         function shareShop() {
             if (navigator.share) {
                 navigator.share({
@@ -317,19 +337,21 @@
                     url: window.location.href 
                 }).catch(console.error);
             } else {
-                // Fallback for desktops or older browsers
                 const shareUrl = `https://wa.me/?text=${encodeURIComponent("Check out Sasreya Foods: " + window.location.href)}`;
                 window.open(shareUrl, '_blank');
             }
         }
 
-        // --- NEW: Live Search Filter ---
+        // --- FIX: Upgraded Multi-Word Smart Search ---
         function filterProducts() {
-            const term = document.getElementById('search-input').value.toLowerCase();
+            const term = document.getElementById('search-input').value.toLowerCase().trim();
+            // Splits the search into multiple words (e.g. "mango" and "pickle")
+            const searchWords = term.split(' ').filter(w => w !== ''); 
             const cards = document.querySelectorAll('.product-card');
             
             globalProducts.forEach((product, index) => {
-                const match = product.name.toLowerCase().includes(term) || product.description.toLowerCase().includes(term);
+                // Checks if EVERY word typed exists in the hidden search string
+                const match = searchWords.every(word => product.hiddenSearchText.includes(word));
                 cards[index].style.display = match ? 'flex' : 'none';
             });
         }
@@ -564,7 +586,6 @@
                 return; 
             }
 
-            // Memory Check
             const savedName = localStorage.getItem('sasreya_name');
             const savedPhone = localStorage.getItem('sasreya_phone');
             const savedPlace = localStorage.getItem('sasreya_place');
@@ -618,7 +639,6 @@
                 return; 
             }
 
-            // Save for Next Time
             localStorage.setItem('sasreya_name', name);
             localStorage.setItem('sasreya_phone', phone);
             localStorage.setItem('sasreya_wizzmoni', document.getElementById('is-wizzmoni').checked);

@@ -234,7 +234,7 @@
                 </div>
                 
                 <select id="modal-weight" class="modal-weight-select" onchange="updateModalUI()">
-                    <option value="" disabled selected>-- Choose Size --</option>
+                    <option value="" disabled selected>--Choose Size--</option>
                     <option value="0.25">250 g</option>
                     <option value="0.5">500 g</option>
                     <option value="1">1 kg</option>
@@ -379,6 +379,9 @@
                 card.className = 'product-card';
                 card.onclick = () => openProductModal(index);
                 
+                // Calculate the 250g starting price
+                const startingPrice = Math.round(parseFloat(product.price) * 0.25);
+                
                 card.innerHTML = `
                     <div class="image-container">
                         <img src="${product.image}" alt="${product.name}">
@@ -395,7 +398,7 @@
                             <option value="1">1 kg</option>
                             <option value="2">2 kg</option>
                         </select>
-                        <div class="price" id="price-${index}">₹${product.price}/kg</div>
+                        <div class="price" id="price-${index}"><span style="font-size: 0.75em; color: #777; font-weight: normal;">Starts at </span>₹${startingPrice}</div>
                     </div>
                 `;
                 productList.appendChild(card);
@@ -415,7 +418,8 @@
             const product = globalProducts[index];
             
             if (select.value === "") {
-                priceContainer.innerText = `₹${product.price}/kg`; 
+                const startingPrice = Math.round(parseFloat(product.price) * 0.25);
+                priceContainer.innerHTML = `<span style="font-size: 0.75em; color: #777; font-weight: normal;">Starts at </span>₹${startingPrice}`; 
                 actionContainer.innerHTML = `<button class="add-plus-btn" onclick="event.stopPropagation(); promptSelection(${index})">+</button>`;
                 return; 
             }
@@ -477,7 +481,8 @@
             document.getElementById(`weight-${index}`).value = select.value;
             
             if (select.value === "") {
-                priceContainer.innerText = `₹${product.price} / kg`;
+                const startingPrice = Math.round(parseFloat(product.price) * 0.25);
+                priceContainer.innerHTML = `<span style="font-size: 0.6em; color: #777; font-weight: normal;">Starts at </span>₹${startingPrice}`;
                 actionContainer.innerHTML = `<button class="big-add-btn" onclick="showToast('Please choose a size first! 👆')">Add Item</button>`;
                 updateCardActionUI(index); 
                 return;

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLIZED | Healthy Breakfast Delivery in Kochi</title>
+    <meta name="description" content="Healthy, nutritious, and tasty breakfast delivery in Kochi. Subscribe to our daily or monthly plans.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#e8f5e9',
+                            DEFAULT: '#2e7d32', // Forest Green
+                            dark: '#1b5e20',
+                        },
+                        earth: {
+                            50: '#fbf8f1', // Off-white/cream background
+                            100: '#f5efe6',
+                            900: '#2c2925',
+                        },
+                        whatsapp: '#25D366'
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(46, 125, 50, 0.85), rgba(27, 94, 32, 0.95)), url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Cart Sidebar Animation */
+        #cart-sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .cart-open {
+            transform: translateX(0);
+        }
+        .cart-closed {
+            transform: translateX(100%);
+        }
+        /* Custom Scrollbar for Cart */
+        .cart-items-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .cart-items-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-earth-50 text-earth-900 antialiased selection:bg-brand selection:text-white">
+
+    <!-- Cart Overlay & Sidebar -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden transition-opacity" onclick="toggleCart()"></div>
+    
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-[70] cart-closed shadow-2xl flex flex-col">
+        <div class="flex justify-between items-center p-6 border-b border-earth-100">
+            <h2 class="text-2xl font-bold text-brand"><i class="fa-solid fa-basket-shopping mr-2"></i> Your Cart</h2>
+            <button onclick="toggleCart()" class="text-earth-900/50 hover:text-earth-900 transition-colors text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4 cart-items-container bg-earth-50/50">
+            <!-- Cart items injected via JS -->
+            <div class="text-center text-earth-900/50 mt-10">Your cart is empty.</div>
+        </div>
+        
+        <div class="p-6 border-t border-earth-100 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-between items-center mb-4 text-xl font-bold">
+                <span>Total:</span>
+                <span id="cart-total" class="text-brand">₹0.00</span>
+            </div>
+            <button onclick="checkoutToWhatsApp()" class="w-full py-4 rounded-xl bg-whatsapp hover:bg-[#1EBE53] text-white font-bold text-lg transition-colors flex justify-center items-center shadow-lg shadow-whatsapp/20">
+                <i class="fa-brands fa-whatsapp text-2xl mr-2"></i> Order via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Cart Button -->
+    <button onclick="toggleCart()" class="fixed bottom-6 right-6 z-50 bg-brand hover:bg-brand-dark text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105 flex items-center justify-center">
+        <i class="fa-solid fa-basket-shopping text-2xl"></i>
+        <span id="cart-badge" class="absolute -top-2 -right-2 bg-whatsapp text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm hidden">0</span>
+    </button>
+
+    <nav class="fixed w-full z-40 bg-earth-50/90 backdrop-blur-md border-b border-earth-100 transition-all py-4">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-brand tracking-tighter">SLIZED</a>
+            <div class="flex items-center gap-4">
+                <a href="#plans" class="hidden md:inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white bg-brand rounded-full hover:bg-brand-dark transition-colors shadow-sm">
+                    Subscriptions
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-bg relative min-h-[85vh] flex items-center justify-center px-6 pt-20 text-center">
+        <div class="relative z-10 max-w-3xl mx-auto">
+            <span class="inline-block py-1 px-3 rounded-full bg-brand-light/20 text-brand-light text-sm font-semibold tracking-wide mb-6 border border-brand-light/30 backdrop-blur-sm">
+                📍 Now serving in Kochi
+            </span>
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-md">
+                Slice into <br/><span class="text-[#a5d6a7]">something better.</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-earth-100 mb-10 max-w-2xl mx-auto font-light drop-shadow">
+                Healthy breakfast delivery in Kochi. Fuel your body with real ingredients, made with care and delivered fresh to your door.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#menu" class="w-full sm:w-auto px-8 py-4 bg-white text-brand font-bold rounded-full text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                    Explore Menu
+                </a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 w-full overflow-hidden leading-none">
+            <svg class="relative block w-full h-[50px] md:h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.78,197.08,111.45,239.5,106.2,281.41,83.9,321.39,56.44Z" class="fill-earth-50"></path>
+            </svg>
+        </div>
+    </section>
+
+    <section id="menu" class="py-24 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-brand mb-4">Fresh & Nutritious</h2>
+                <p class="text-lg text-earth-900/70 max-w-2xl mx-auto">Build your perfect breakfast box. Add items to your cart to checkout via WhatsApp.</p>
+            </div>
+
+            <!-- 7 Items Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                
+                <!-- Menu Item 1: Veg Salad -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80" alt="Veg Salad" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">Veg Salad</h3>
+                            <span class="text-brand font-bold ml-2">₹150</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Fiber</span>
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Low Calorie</span>
+                        </div>
+                        <button onclick="addToCart('item_1', 'Veg Salad', 150)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Item 2: Sprouts Mix -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group">
+                    <img src="https://rethishdev.github.io/Test/WhatsApp%20Image%202026-09-21%20at%203.55.35%20PM%20(1).jpeg" alt="Sprouts Mix" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">Sprouts Mix</h3>
+                            <span class="text-brand font-bold ml-2">₹160</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Protein</span>
+                        </div>
+                        <button onclick="addToCart('item_2', 'Sprouts Mix', 160)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Item 3: Banana Walnut Oats -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group">
+                    <img src="http://rethishdev.github.io/Test/WhatsApp%20Image%202026-09-21%20at%203.55.35%20PM.jpeg" alt="Banana Walnut Oats" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">Banana Walnut Oats</h3>
+                            <span class="text-brand font-bold ml-2">₹160</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Energy</span>
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Omega-3</span>
+                        </div>
+                        <button onclick="addToCart('item_3', 'Banana Walnut Oats', 160)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Item 4: Dates Peanut Butter Oats -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group">
+                    <img src="https://rethishdev.github.io/Test/WhatsApp%20Image%202026-09-21%20at%203.55.33%20PM.jpeg" alt="Dates Peanut Butter Oats" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">Dates Peanut Butter</h3>
+                            <span class="text-brand font-bold ml-2">₹160</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Iron</span>
+                        </div>
+                        <button onclick="addToCart('item_4', 'Dates Peanut Butter Oats', 160)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Item 5: Apple Cinnamon Oats -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group">
+                    <img src="http://rethishdev.github.io/Test/WhatsApp%20Image%202026-09-21%20at%203.55.36%20PM.jpeg" alt="Apple Cinnamon Oats" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">Apple Cinnamon Oats</h3>
+                            <span class="text-brand font-bold ml-2">₹160</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Metabolism</span>
+                        </div>
+                        <button onclick="addToCart('item_5', 'Apple Cinnamon Oats', 160)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Item 6: Mixed Fruit Oats -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80" alt="Mixed Fruit Oats" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">Mixed Fruit Oats</h3>
+                            <span class="text-brand font-bold ml-2">₹200</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Hydration</span>
+                        </div>
+                        <button onclick="addToCart('item_6', 'Mixed Fruit Oats', 200)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Item 7: SLICED CUP -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-earth-100 group relative">
+                    <div class="absolute top-4 left-4 bg-brand text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10">Bestseller</div>
+                    <img src="http://rethishdev.github.io/Test/WhatsApp%20Image%202026-09-21%20at%203.16.35%20PM.jpeg" alt="SLICED CUP" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold leading-tight">SLICED CUP</h3>
+                            <span class="text-brand font-bold ml-2">₹69</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Antioxidants</span>
+                            <span class="bg-brand-light text-brand-dark text-xs px-2 py-1 rounded-md font-medium">Vitamin A</span>
+                        </div>
+                        <button onclick="addToCart('item_7', 'SLICED CUP', 69)" class="mt-auto flex items-center justify-center w-full py-2.5 rounded-xl bg-earth-50 border border-brand/20 hover:bg-brand hover:text-white text-brand font-semibold transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="plans" class="py-24 px-6 bg-white">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-brand font-bold tracking-wider uppercase text-sm mb-2 block">Subscribe & Save</span>
+                <h2 class="text-4xl font-bold text-earth-900 mb-4">Choose Your Plan</h2>
+                <p class="text-lg text-earth-900/70 max-w-2xl mx-auto">Set your health on autopilot. Order once and get your daily dose of nutrition delivered right to you.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <!-- Plan 1 -->
+                <div class="bg-earth-50 rounded-3xl p-8 md:p-10 border border-earth-100 relative shadow-sm hover:shadow-md transition-shadow">
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold text-brand mb-2">5-Day Office Plan</h3>
+                        <p class="text-earth-900/60">Perfect for busy workweeks. Stay energized from Monday to Friday.</p>
+                    </div>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-circle-check text-brand mt-1.5 mr-3"></i>
+                            <span class="text-earth-900">Daily delivery to your workplace</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-circle-check text-brand mt-1.5 mr-3"></i>
+                            <span class="text-earth-900">Alternating Fresh Fruit Bowls & Juices</span>
+                        </li>
+                    </ul>
+                    <!-- Direct WA link for Subscriptions -->
+                    <a href="https://wa.me/919995720012?text=Hi%20Slized!%20I%20want%20to%20subscribe%20to%20the%205-Day%20Office%20Plan%20starting%20Monday." target="_blank" class="flex items-center justify-center w-full py-4 rounded-xl bg-whatsapp hover:bg-[#1EBE53] text-white font-bold text-lg transition-colors shadow-lg shadow-whatsapp/30">
+                        <i class="fa-brands fa-whatsapp text-2xl mr-3"></i> Subscribe via WhatsApp
+                    </a>
+                </div>
+
+                <!-- Plan 2 -->
+                <div class="bg-brand text-white rounded-3xl p-8 md:p-10 relative shadow-2xl transform md:-translate-y-4">
+                    <div class="absolute top-0 right-8 transform -translate-y-1/2">
+                        <span class="bg-[#a5d6a7] text-brand-dark text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-md">Most Popular</span>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold mb-2">Monthly Fitness Plan</h3>
+                        <p class="text-brand-light/80">Consistency is key. A comprehensive 30-day nutrition routine.</p>
+                    </div>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-circle-check text-[#a5d6a7] mt-1.5 mr-3"></i>
+                            <span class="text-white">Daily Overnight Oats & Detox Teas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-circle-check text-[#a5d6a7] mt-1.5 mr-3"></i>
+                            <span class="text-white">Tailored for gut health & sustained energy</span>
+                        </li>
+                    </ul>
+                    <!-- Direct WA link for Subscriptions -->
+                    <a href="https://wa.me/919995720012?text=Hi%20Slized!%20I%20want%20to%20subscribe%20to%20the%20Monthly%20Fitness%20Plan." target="_blank" class="flex items-center justify-center w-full py-4 rounded-xl bg-white hover:bg-earth-50 text-brand font-bold text-lg transition-colors shadow-lg">
+                        <i class="fa-brands fa-whatsapp text-2xl mr-3 text-whatsapp"></i> Subscribe via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-earth-900 text-earth-100 py-12 text-center border-t border-earth-900">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-white mb-4">SLIZED</h2>
+            <p class="mb-8 opacity-70">Slice into something better.</p>
+            <p class="text-sm opacity-50">&copy; 2026 SLIZED Kochi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cart State Management
+        let cart = JSON.parse(localStorage.getItem('slizedCart')) || [];
+        
+        // DOM Elements
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalEl = document.getElementById('cart-total');
+        const cartBadge = document.getElementById('cart-badge');
+
+        // Toggle Sidebar visibility
+        function toggleCart() {
+            if (cartSidebar.classList.contains('cart-closed')) {
+                cartSidebar.classList.remove('cart-closed');
+                cartSidebar.classList.add('cart-open');
+                cartOverlay.classList.remove('hidden');
+                cartOverlay.classList.add('block');
+            } else {
+                cartSidebar.classList.remove('cart-open');
+                cartSidebar.classList.add('cart-closed');
+                cartOverlay.classList.remove('block');
+                cartOverlay.classList.add('hidden');
+            }
+        }
+
+        // Add item to cart
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ id, name, price, qty: 1 });
+            }
+            
+            saveAndRender();
+            
+            // Visual feedback on button (Optional but nice UX)
+            if(!cartSidebar.classList.contains('cart-open')) {
+                cartSidebar.style.transform = "scale(1.05)";
+                setTimeout(() => cartSidebar.style.transform = "", 150);
+                
+                // Open cart automatically on first item add
+                if (cart.length === 1 && cart[0].qty === 1) {
+                    toggleCart();
+                }
+            }
+        }
+
+        // Change quantity (increment/decrement)
+        function changeQty(id, delta) {
+            const itemIndex = cart.findIndex(item => item.id === id);
+            if (itemIndex > -1) {
+                cart[itemIndex].qty += delta;
+                
+                // Remove item if quantity goes to 0 or below
+                if (cart[itemIndex].qty <= 0) {
+                    cart.splice(itemIndex, 1);
+                }
+                
+                saveAndRender();
+            }
+        }
+
+        // Save to LocalStorage and update UI
+        function saveAndRender() {
+            localStorage.setItem('slizedCart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        // Render HTML for cart items
+        function renderCart() {
+            // Update Badge
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            if (totalItems > 0) {
+                cartBadge.textContent = totalItems;
+                cartBadge.classList.remove('hidden');
+            } else {
+                cartBadge.classList.add('hidden');
+            }
+
+            // Render Items list
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="text-center text-earth-900/50 mt-10">Your cart is empty.</div>';
+                cartTotalEl.textContent = '₹0.00';
+                return;
+            }
+
+            let html = '';
+            let totalCost = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                totalCost += itemTotal;
+                
+                html += `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-earth-100 flex justify-between items-center">
+                    <div class="flex-grow pr-3">
+                        <h4 class="font-bold text-earth-900">${item.name}</h4>
+                        <div class="text-brand font-semibold text-sm">₹${item.price}</div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-earth-50 rounded-lg p-1 border border-earth-100">
+                        <button onclick="changeQty('${item.id}', -1)" class="w-8 h-8 flex items-center justify-center text-earth-900 hover:bg-white rounded-md transition-colors"><i class="fa-solid fa-minus text-xs"></i></button>
+                        <span class="font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="changeQty('${item.id}', 1)" class="w-8 h-8 flex items-center justify-center text-earth-900 hover:bg-white rounded-md transition-colors"><i class="fa-solid fa-plus text-xs"></i></button>
+                    </div>
+                </div>
+                `;
+            });
+
+            cartItemsContainer.innerHTML = html;
+            cartTotalEl.textContent = `₹${totalCost.toFixed(2)}`;
+        }
+
+        // Generate WhatsApp Order Message
+        function checkoutToWhatsApp() {
+            if (cart.length === 0) {
+                alert("Your cart is empty! Add some healthy items first.");
+                return;
+            }
+
+            let message = "Hi Slized! I want to order:\n\n";
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                message += `- ${item.qty}x ${item.name} (₹${itemTotal})\n`;
+            });
+
+            message += `\nTotal: ₹${total}`;
+            
+            // SLIZED WhatsApp Number
+            const waNumber = "919995720012";
+            const encodedMessage = encodeURIComponent(message);
+            const waURL = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+            
+            // Redirect to WhatsApp
+            window.open(waURL, '_blank');
+            
+            // Optional: Clear cart after checkout initiation (commented out by default)
+            // cart = [];
+            // saveAndRender();
+        }
+
+        // Initial Render on page load
+        renderCart();
+    </script>
+</body>
+</html>

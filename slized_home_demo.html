@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slized - Healthy Breakfast Delivery in Kochi</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+        
+        /* Brand Colors */
+        :root {
+            --brand-green: #27ae60;
+            --brand-green-hover: #219653;
+            --brand-orange: #f39c12;
+            --brand-light: #f9fdfa;
+        }
+
+        .text-brand { color: var(--brand-green); }
+        .bg-brand-light { background-color: var(--brand-light); }
+        
+        .btn-brand {
+            background-color: var(--brand-green);
+            color: white;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 12px 30px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-brand:hover {
+            background-color: var(--brand-green-hover);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 14px 24px;
+            width: 100%;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(232,245,233,1) 0%, rgba(255,255,255,1) 100%);
+            padding: 80px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .hero-title {
+            font-weight: 700;
+            font-size: 2.8rem;
+            line-height: 1.2;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Product Cards */
+        .product-card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        /* Subscription Section */
+        .subscription-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 2px solid #e8f5e9;
+        }
+
+        .form-select-lg {
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            padding: 14px;
+            font-weight: 500;
+        }
+        
+        .form-select-lg:focus {
+            border-color: var(--brand-green);
+            box-shadow: 0 0 0 0.25rem rgba(39, 174, 96, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-brand d-flex align-items-center gap-2" href="#">
+                <i class="bi bi-egg-fried fs-3"></i> Slized
+            </a>
+        </div>
+    </nav>
+
+    <section class="hero-section text-center">
+        <div class="container px-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 mb-3 fw-semibold">
+                        📍 Now delivering in Kochi
+                    </span>
+                    <h1 class="hero-title text-dark">
+                        Healthy breakfast delivery in <span class="text-brand">Kochi</span>.
+                    </h1>
+                    <p class="lead text-muted mb-5 px-md-5">
+                        Fuel your busy mornings with chef-prepared fruit bowls, detox juices, and overnight oats. Delivered fresh to your home or office, every single day.
+                    </p>
+                    <a href="#subscribe" class="btn btn-brand btn-lg shadow-sm">
+                        View Subscription Plans
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-brand-light">
+        <div class="container px-4 py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">What's on the menu?</h2>
+                <p class="text-muted">Freshly sourced ingredients, prepared every morning.</p>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Product 1 -->
+                <div class="col-md-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?auto=format&fit=crop&w=600&q=80" class="card-img-top product-img" alt="Fresh Fruit Bowl">
+                        <div class="card-body text-center p-4">
+                            <h4 class="card-title fw-bold h5">Signature Fruit Bowls</h4>
+                            <p class="card-text text-muted small">Seasonal tropical fruits from local Kerala farms, topped with chia seeds and honey.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="col-md-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80" class="card-img-top product-img" alt="Cold Pressed Detox Juices">
+                        <div class="card-body text-center p-4">
+                            <h4 class="card-title fw-bold h5">Cold-Pressed Detox</h4>
+                            <p class="card-text text-muted small">Revitalize your body with our daily rotating greens and root vegetable blends.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="col-md-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=600&q=80" class="card-img-top product-img" alt="Overnight Oats">
+                        <div class="card-body text-center p-4">
+                            <h4 class="card-title fw-bold h5">Protein Overnight Oats</h4>
+                            <p class="card-text text-muted small">Rolled oats soaked in almond milk, layered with fresh berries and peanut butter.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="subscribe" class="py-5">
+        <div class="container px-4 py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                    <div class="subscription-card text-center">
+                        <i class="bi bi-calendar2-check text-brand fs-1 mb-3 d-block"></i>
+                        <h3 class="fw-bold mb-2">Start Your Healthy Routine</h3>
+                        <p class="text-muted mb-4">Choose a plan that fits your lifestyle. Cancel anytime.</p>
+                        
+                        <div class="mb-4 text-start">
+                            <label for="planSelect" class="form-label fw-semibold text-dark ms-1">Select your plan</label>
+                            <select id="planSelect" class="form-select form-select-lg w-100">
+                                <option value="5-Day Office Plan" selected>💼 5-Day Office Plan (Mon - Fri)</option>
+                                <option value="Monthly Fitness Plan">🏋️ Monthly Fitness Plan (30 Days)</option>
+                                <option value="Trial Weekend Plan">🌱 2-Day Trial Plan (Weekend)</option>
+                            </select>
+                        </div>
+
+                        <!-- WhatsApp Checkout Button -->
+                        <button onclick="handleCheckout()" class="btn btn-whatsapp btn-lg">
+                            <i class="bi bi-whatsapp fs-5"></i> Subscribe via WhatsApp
+                        </button>
+                        
+                        <p class="small text-muted mt-3 mb-0">
+                            <i class="bi bi-shield-check text-success"></i> Secure, fast, and personal checkout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-white text-center py-4 mt-auto">
+        <div class="container">
+            <p class="mb-0 fw-light">&copy; 2026 Slized Kochi. Eat fresh, live well.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS (Optional for components, included for completeness) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Checkout Logic -->
+    <script>
+        function handleCheckout() {
+            // Get the selected plan from the dropdown
+            const planSelect = document.getElementById('planSelect');
+            const selectedPlan = planSelect.options[planSelect.selectedIndex].text; // Get visual text
+            
+            // Clean up emojis for the message if desired, or keep them. We'll keep them for personality.
+            const cleanedPlanName = selectedPlan.replace(/💼|🏋️|🌱/g, '').trim();
+
+            // Construct the pre-filled message
+            const message = `Hi Slized! I want to subscribe to the ${cleanedPlanName} starting Monday.`;
+            
+            // Encode the message for URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Slized dummy business WhatsApp number (Replace with actual when deploying)
+            const whatsappNumber = "919000000000"; 
+            
+            // Create the WhatsApp API link
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+            
+            // Open the link in a new tab/window
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+</html>

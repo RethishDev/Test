@@ -252,16 +252,12 @@
             // Clean up emojis for the message if desired, or keep them. We'll keep them for personality.
             const cleanedPlanName = selectedPlan.replace(/💼|🏋️|🌱/g, '').trim();
 
-            // Construct the pre-filled message
             const message = `Hi Slized! I want to subscribe to the ${cleanedPlanName} starting Monday.`;
             
-            // Encode the message for URL
             const encodedMessage = encodeURIComponent(message);
             
-            // Slized dummy business WhatsApp number (Replace with actual when deploying)
-            const whatsappNumber = "919000000000"; 
+            const whatsappNumber = "918590360735"; 
             
-            // Create the WhatsApp API link
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
             
             // Open the link in a new tab/window

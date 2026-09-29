@@ -1,690 +1,447 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sasreya Foods</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <title>Rethish Kumar P A | Modern Portfolio</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Alerts & Animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background-color: #f4f6f8; overflow: hidden; }
-        
-        /* --- Sidebar Navigation --- */
-        .sidebar { width: 250px; background: #fff; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
-        .sidebar-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
-        
-        /* --- FIX: Restored Logo Size --- */
-        .brand-logo { width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0; }
-        
-        .brand-name { color: #2c3e50; margin: 0; font-size: 1.5em; text-align: left; font-weight: 800; letter-spacing: -0.5px; } 
-        .sidebar p { text-align: center; color: #777; font-size: 0.85em; margin-bottom: 30px; margin-top: 5px; }
-        
-        .nav-links { display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn { background: transparent; color: #555; border: none; padding: 12px 15px; border-radius: 8px; font-size: 1.1em; cursor: pointer; text-align: left; font-weight: bold; transition: 0.2s; display: flex; justify-content: space-between; align-items: center;}
-        .nav-btn:hover { background: #f0fdf4; color: #2ecc71; }
-        .nav-btn.active { background: #2ecc71; color: white; }
-        .nav-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; display: none; }
-
-        /* --- Main Content Area --- */
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .view { display: none; animation: fadeIn 0.3s; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* --- NEW: Live Search Bar --- */
-        .search-container { margin-bottom: 20px; }
-        .search-input { width: 100%; padding: 14px 20px; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 1.05em; font-family: inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; }
-        .search-input:focus { border-color: #2ecc71; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2); }
-
-        /* --- Zepto-Style Products Grid --- */
-        .products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } 
-        
-        @media (min-width: 768px) {
-            .products { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        /* CSS VARIABLES WITH ENHANCED GLASSMORPHISM */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a, #1e1b4b, #111827);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-1: #3b82f6; /* Blue */
+            --accent-2: #8b5cf6; /* Purple */
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --nav-bg: rgba(15, 23, 42, 0.65);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        .product-card { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; display: flex; flex-direction: column; cursor: pointer;}
-        
-        /* Image & Floating Button Container */
-        .image-container { position: relative; margin-bottom: 15px; }
-        .product-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; display: block; background: #f9f9f9;}
-        .action-container { position: absolute; bottom: -12px; right: 8px; z-index: 5; }
-        
-        /* Small Floating Controls */
-        .add-plus-btn { width: 34px; height: 34px; background: white; color: #e74c3c; border: 1.5px solid #e74c3c; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.15); line-height: 0; padding-bottom: 2px; transition: 0.1s;}
-        .add-plus-btn:hover { background: #e74c3c; color: white; }
-        .tiny-qty { background: #e74c3c; color: white; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; width: 75px; height: 32px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); overflow: hidden; border: 1.5px solid #e74c3c;}
-        .tiny-qty button { background: transparent; border: none; color: white; font-weight: bold; width: 25px; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center;}
-        .tiny-qty span { font-weight: bold; font-size: 0.9em; }
-
-        /* Typography & Controls */
-        .product-title { font-size: 0.9em; margin: 0 0 3px 0; color: #2c3e50; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;}
-        .product-desc { font-size: 0.75em; color: #777; margin: 0 0 8px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;}
-        .bottom-card-row { display: flex; flex-direction: column; gap: 5px; margin-top: auto; }
-        .weight-select { width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 0.8em; outline: none; background: #fdfdfd;}
-        .price { font-size: 0.95em; font-weight: bold; color: #333; margin: 0; }
-        
-        /* --- Product Details Modal (Bottom Sheet on Mobile) --- */
-        .product-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: flex-end; justify-content: center; }
-        .product-modal-content { background: white; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s; position: relative; padding-bottom: 20px;}
-        
-        @media (min-width: 768px) { 
-            .product-modal-overlay { align-items: center; padding: 20px; }
-            .product-modal-content { border-radius: 15px; padding-bottom: 0;}
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent-1: #2563eb;
+            --accent-2: #7c3aed;
+            --card-bg: rgba(255, 255, 255, 0.4);
+            --card-border: rgba(255, 255, 255, 0.6);
+            --nav-bg: rgba(255, 255, 255, 0.65);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
-        .product-modal-img-container { position: relative; }
-        .product-modal-img-container img { width: 100%; height: 280px; object-fit: cover; }
-        .close-modal-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; color: #333; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-weight: bold;}
+        /* GLOBAL STYLES */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); transition: 0.4s ease; overflow-x: hidden; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        .container { width: 90%; max-width: 1200px; margin: auto; }
         
-        .product-modal-body { padding: 20px; }
-        .product-modal-title { margin-top: 0; color: #2c3e50; font-size: 1.4em; margin-bottom: 5px;}
-        .product-modal-desc { color: #666; line-height: 1.5; font-size: 0.95em; margin-bottom: 20px;}
-        .product-modal-price { font-size: 1.4em; font-weight: bold; color: #333; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;}
+        /* TYPOGRAPHY & HEADINGS */
+        h1, h2, h3, h4 { font-weight: 700; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; position: relative; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .modal-weight-select { width: 100%; padding: 12px; font-size: 1.1em; margin-bottom: 20px; border-radius: 8px; border: 1px solid #ccc;}
-        .big-add-btn { background: #e74c3c; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.2em; transition: 0.2s;}
-        
-        .modal-qty-controls { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 2px solid #e74c3c; border-radius: 8px; height: 50px; overflow: hidden;}
-        .modal-qty-controls button { width: 30%; background: transparent; color: #e74c3c; font-size: 1.8em; border: none; cursor: pointer; height: 100%; font-weight: bold;}
-        .modal-qty-controls span { width: 40%; font-weight: bold; text-align: center; font-size: 1.2em; color: #e74c3c;}
+        /* HEADER & NAVIGATION (Glassmorphism) */
+        header { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; z-index: 1000; background: transparent; transition: 0.4s; }
+        header.scrolled { background: var(--nav-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--card-border); box-shadow: var(--glass-shadow); }
+        .logo { font-size: 1.8rem; font-weight: 700; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        nav { display: flex; gap: 30px; }
+        nav a { font-weight: 500; position: relative; }
+        nav a::after { content: ""; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: var(--accent-1); transition: 0.3s; }
+        nav a:hover::after, nav a.active::after { width: 100%; }
+        .menu-btn { display: none; font-size: 1.5rem; cursor: pointer; }
 
-        /* --- Cart & Checkout Modals --- */
-        .cart-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .cart-item-details { text-align: left; }
-        .cart-item-details small { color: #777; display: block; margin-top: 4px;}
-        
-        .cart-qty { border: 1px solid #ddd; background: #fff; border-radius: 6px; display: flex; align-items: center; width: 90px; height: 35px;}
-        .cart-qty button { width: 30px; background: none; border: none; font-size: 1.2em; cursor: pointer;}
-        .cart-qty span { flex: 1; text-align: center; font-weight: bold;}
+        /* FLOATING CONTROLS (Glass Buttons) */
+        .controls { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 999; }
+        .controls a, .controls button { width: 45px; height: 45px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text-main); cursor: pointer; transition: 0.3s; box-shadow: var(--glass-shadow); }
+        .controls a:hover, .controls button:hover { background: var(--accent-1); color: #fff; transform: scale(1.1); }
 
-        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1em; margin-top: 20px;}
-        
-        .floating-cart { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; background: #2ecc71; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4); border: none; z-index: 1001; transition: transform 0.2s;}
-        .floating-badge { position: absolute; top: -2px; right: -2px; background: #e74c3c; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+        /* BUTTONS */
+        .btn { display: inline-block; padding: 12px 28px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; border: none; }
+        .btn-primary { background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); color: #fff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6); }
+        .btn-outline { border: 2px solid var(--accent-1); color: var(--text-main); background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .btn-outline:hover { background: var(--accent-1); color: #fff; }
 
-        .loader-container { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 0; color: #777; }
-        .spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid #2ecc71; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* SECTIONS */
+        section { padding: 100px 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; }
 
-        /* Checkout Modal */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
-        
-        .modal-content h3 { margin-top: 0; color: #2c3e50; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
-        .input-group { margin-bottom: 15px; }
-        .input-group input[type="text"], .input-group input[type="tel"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em; font-family: inherit; outline: none;}
-        .radio-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #2ecc71; cursor: pointer;}
-        .radio-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: #2ecc71; cursor: pointer; }
-        
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-actions button { flex: 1; padding: 12px; font-size: 1.1em; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; }
-        .cancel-btn { background: #f1f2f6; color: #555; }
-        .confirm-btn { background: #25D366; color: white; }
+        /* HERO SECTION */
+        #home { text-align: center; }
+        .hero-subtitle { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; }
+        .hero-title { font-size: 4rem; line-height: 1.2; margin-bottom: 20px; }
+        .hero-desc { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px; }
+        .hero-buttons { display: flex; gap: 20px; justify-content: center; }
 
-        /* --- NEW: Toast Notification Styles --- */
-        .toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #2c3e50; color: white; padding: 14px 24px; border-radius: 30px; font-weight: bold; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; width: max-content; max-width: 90%; transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; font-size: 0.95em;}
-        .toast.show { top: 20px; }
+        /* ABOUT SECTION */
+        .about-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 50px; align-items: center; }
+        .about-image { position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--glass-shadow); border: 1px solid var(--card-border); }
+        .about-image img { width: 100%; height: auto; display: block; object-fit: cover; transition: 0.5s; }
+        .about-image:hover img { transform: scale(1.05); }
+        .about-text h3 { font-size: 1.8rem; margin-bottom: 15px; color: var(--accent-1); }
+        .about-text p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.8; }
+        .skills-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .skill-tag { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; }
+
+        /* SERVICES SECTION (Glassmorphism Cards) */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; width: 100%; }
+        .service-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 40px 30px; border-radius: 20px; text-align: center; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: 0.4s; box-shadow: var(--glass-shadow); }
+        .service-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.15); border-color: var(--accent-1); }
+        .service-card i { font-size: 3rem; color: var(--accent-2); margin-bottom: 20px; }
+        .service-card h3 { margin-bottom: 15px; font-size: 1.4rem; }
+        .service-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+        /* PROJECTS SECTION (Glassmorphism Cards) */
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; }
+        .project-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: 0.4s; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: var(--glass-shadow); }
+        .project-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.15); border-color: var(--accent-2); }
+        .project-content { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; }
+        .project-content h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .tech-stack { color: var(--accent-1); font-size: 0.9rem; margin-bottom: 15px; font-weight: 500; }
+        .project-content p { color: var(--text-muted); margin-bottom: 25px; line-height: 1.6; flex-grow: 1; }
         
-        /* --- Mobile Responsiveness --- */
+        /* CONTACT SECTION (Glassmorphism Panel) */
+        .contact-wrapper { background: var(--card-bg); border: 1px solid var(--card-border); padding: 50px; border-radius: 20px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: var(--glass-shadow); width: 100%; max-width: 800px; margin: auto; }
+        .contact-wrapper form { display: flex; flex-direction: column; gap: 20px; }
+        .input-group input, .input-group textarea { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(0,0,0,0.25); color: var(--text-main); font-size: 1rem; outline: none; transition: 0.3s; }
+        [data-theme="light"] .input-group input, [data-theme="light"] .input-group textarea { background: rgba(255,255,255,0.5); }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--accent-1); background: rgba(0,0,0,0.35); }
+
+        /* FOOTER */
+        footer { text-align: center; padding: 30px; border-top: 1px solid var(--card-border); color: var(--text-muted); margin-top: 50px; }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 992px) {
+            .about-grid { grid-template-columns: 1fr; }
+            .about-image { max-width: 400px; margin: 0 auto; }
+            .hero-title { font-size: 3rem; }
+        }
+
         @media (max-width: 768px) {
-            body { display: block; height: auto; overflow-x: hidden; overflow-y: auto; }
-            .sidebar { width: 100%; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; background: white;}
-            .sidebar-header { justify-content: flex-start; margin-bottom: 5px; }
-            .sidebar p { display: block; margin-top: 0; margin-bottom: 15px; text-align: left; } 
-            
-            .nav-links { flex-direction: row; gap: 10px; flex-wrap: wrap; }
-            .nav-btn { flex: 1; min-width: 30%; padding: 10px; font-size: 0.95em; justify-content: center; gap: 6px;}
-            
-            .main-content { padding: 15px; overflow-y: visible; }
-            .cart-container { padding: 15px; }
-            .toast.show { top: 120px; } 
+            nav { position: absolute; top: 70px; right: -100%; flex-direction: column; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); width: 250px; border-radius: 20px; padding: 30px; gap: 20px; transition: 0.4s; box-shadow: var(--glass-shadow); border: 1px solid var(--card-border); }
+            nav.active { right: 5%; }
+            .menu-btn { display: block; }
+            .controls { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); flex-direction: row; }
+            section { padding: 80px 0; }
+            .hero-title { font-size: 2.5rem; }
+            .contact-wrapper { padding: 30px; }
+            .hero-buttons { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+    <!-- HEADER -->
+    <header id="header">
+        <a href="#home" class="logo">Rethish.</a>
+        <nav id="navbar">
+            <a href="#home" class="active">Home</a>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div class="menu-btn" id="menuBtn">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </header>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <!-- Animated SVG Logo -->
-            <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="background: white; border: 2px solid #e74c3c; box-sizing: border-box;">
-                <style>
-                    .spin { animation: spin 10s linear infinite; transform-origin: 50px 50px; }
-                    .pulse { animation: pulse 2s ease-in-out infinite; transform-origin: 50px 50px; }
-                    @keyframes spin { 100% { transform: rotate(360deg); } }
-                    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-                </style>
-                <g class="spin">
-                    <circle cx="50" cy="50" r="42" fill="#f1c40f" />
-                    <circle cx="50" cy="50" r="35" fill="none" stroke="#e67e22" stroke-width="4" stroke-dasharray="10 8" />
-                </g>
-                <g class="pulse">
-                    <circle cx="50" cy="50" r="26" fill="#ffffff" stroke="#e74c3c" stroke-width="3" />
-                    <text x="50" y="59" font-family="'Segoe UI', Tahoma, Arial, sans-serif" font-size="26" font-weight="900" fill="#e74c3c" text-anchor="middle" letter-spacing="-1">SF</text>
-                    <path d="M 68 32 Q 78 22 82 35 Q 72 45 68 32" fill="#2ecc71" stroke="#27ae60" stroke-width="1"/>
-                    <path d="M 32 68 Q 22 78 18 65 Q 28 55 32 68" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
-                </g>
-            </svg>
-            <h2 class="brand-name">Sasreya Foods</h2>
-        </div>
-        <p>Complete homemade Pickles & Chips 💯</p>
-        <div class="nav-links">
-            <button class="nav-btn active" id="nav-products" onclick="switchTab('products')">🛍️ Products</button>
-            <button class="nav-btn" id="nav-cart" onclick="switchTab('cart')">🛒 Cart <span class="nav-badge" id="nav-cart-badge">0</span></button>
-            <button class="nav-btn" onclick="shareShop()" style="background: #f1f2f6; color: #2c3e50;">📤 Share</button>
-        </div>
+    <!-- FLOATING CONTROLS -->
+    <div class="controls">
+        <button id="themeToggle" title="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+        <a href="https://github.com/RethishDev" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/rethish-kumar-p-a-152a55326" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="main-content">
-        <!-- Products View -->
-        <div id="products-tab" class="view active">
-            
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="🔍 Search for Pickles, Chips, Powders..." onkeyup="filterProducts()">
-            </div>
-
-            <div class="products" id="product-list">
-                <div class="loader-container">
-                    <div class="spinner"></div>
-                    <p>Loading fresh items from the kitchen...</p>
-                </div>
+    <!-- HOME SECTION -->
+    <section id="home">
+        <div class="container">
+            <p class="hero-subtitle" data-aos="fade-up">Welcome to my universe</p>
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">Hi, I'm Rethish Kumar P A</h1>
+            <p class="hero-desc" data-aos="fade-up" data-aos-delay="200">
+                Java Software Engineer at Wizzmoni Financial Services LTD. Specializing in Spring Boot, REST APIs, Database Operations, and seamless UI integrations.
+            </p>
+            <div class="hero-buttons" data-aos="fade-up" data-aos-delay="300">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-outline">Let's Connect</a>
             </div>
         </div>
+    </section>
 
-        <!-- Cart View -->
-        <div id="cart-tab" class="view">
-            <div class="cart-container">
-                <h2 style="margin-top: 0; color: #333;">Your Shopping Cart</h2>
-                <div id="cart-items">
-                    <p style="color: #777;">Your cart is empty.</p>
-                </div>
-                <h3 style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px;">
-                    Total Amount: ₹<span id="cart-total">0</span>
-                </h3>
-                <button class="whatsapp-btn" onclick="openCheckoutModal()">Proceed to Checkout</button>
-            </div>
-        </div>
-    </div>
-
-    <button class="floating-cart" id="floating-cart" onclick="switchTab('cart')">
-        🛒 <span class="floating-badge" id="floating-badge">0</span>
-    </button>
-
-    <!-- Product Details Modal -->
-    <div class="product-modal-overlay" id="product-modal-overlay" onclick="closeProductModalOutside(event)">
-        <div class="product-modal-content">
-            <div class="product-modal-img-container">
-                <img id="modal-img" src="" alt="Product">
-                <button class="close-modal-btn" onclick="closeProductModal()">✕</button>
-            </div>
-            
-            <div class="product-modal-body">
-                <h2 class="product-modal-title" id="modal-title">Title</h2>
-                <p class="product-modal-desc" id="modal-desc">Description</p>
-                
-                <div class="product-modal-price">
-                    <span>Price</span>
-                    <span id="modal-price">₹0</span>
+    <!-- ABOUT SECTION -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">About Me</h2>
+            <div class="about-grid">
+                <!-- IMAGE PLACEHOLDER -->
+                <div class="about-image" data-aos="fade-right">
+                    <img src="https://lh3.googleusercontent.com/a/ACg8ocIefsZCX-80RlstBFUzebVzGp3JmXJzip6fnxvNZRkHAXa36Jg9=s360-c-no" alt="Rethish Kumar P A">
                 </div>
                 
-                <select id="modal-weight" class="modal-weight-select" onchange="updateModalUI()">
-                    <option value="" disabled selected>-- Choose Size --</option>
-                    <option value="0.25">250 g</option>
-                    <option value="0.5">500 g</option>
-                    <option value="1">1 kg</option>
-                    <option value="2">2 kg</option>
-                </select>
-                
-                <div id="modal-action-container">
+                <div class="about-text" data-aos="fade-left">
+                    <h3>Building robust backend systems & clean interfaces.</h3>
+                    <p>I am a passionate software engineer with hands-on experience developing enterprise-grade applications. Currently working on CRMS (Customer Relationship Management System) at Wizzmoni, I design and implement RESTful Spring Boot microservices, containerize apps with Docker, and manage complex database operations using PostgreSQL.</p>
+                    <p>Beyond the backend, I actively engage in front-end development using HTML, CSS, JavaScript, and Bootstrap to deliver complete, full-stack solutions. When I'm not coding, you can find me tracking my fitness goals or exploring new creative tech ideas.</p>
+                    
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">Tech Arsenal</h4>
+                    <div class="skills-container">
+                        <span class="skill-tag">Java</span>
+                        <span class="skill-tag">Spring Boot</span>
+                        <span class="skill-tag">PostgreSQL</span>
+                        <span class="skill-tag">Microservices</span>
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">REST APIs</span>
+                        <span class="skill-tag">JavaScript / HTML / CSS</span>
+                        <span class="skill-tag">JSP & Servlets</span>
+                        <span class="skill-tag">Git / GitHub / GitLab</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Checkout Details Modal -->
-    <div class="modal-overlay" id="checkout-modal">
-        <div class="modal-content">
-            <h3>Delivery Details</h3>
-            <div class="input-group">
-                <input type="text" id="cust-name" placeholder="Your Name" required>
-            </div>
-            <div class="input-group">
-                <input type="tel" id="cust-phone" placeholder="Phone / WhatsApp Number" required>
-            </div>
-            <label class="radio-group">
-                <input type="checkbox" id="is-wizzmoni" onchange="togglePlaceInput()">
-                <span>I am from Wizzmoni</span>
-            </label>
-            <div class="input-group" id="place-container">
-                <input type="text" id="cust-place" placeholder="Your Location / Place" required>
-            </div>
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="closeCheckoutModal()">Cancel</button>
-                <button class="confirm-btn" onclick="submitOrder()">Send Order</button>
+    <!-- SERVICES SECTION -->
+    <section id="services">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">What I Do</h2>
+            <div class="services-grid">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+                    <i class="fa-solid fa-server"></i>
+                    <h3>API & Backend Development</h3>
+                    <p>Designing secure, scalable, and high-performance RESTful APIs and microservices using Java and Spring Boot.</p>
+                </div>
+                <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fa-solid fa-laptop-code"></i>
+                    <h3>Web Development</h3>
+                    <p>Building responsive, modern, and interactive websites using HTML, CSS, JavaScript, and modern front-end frameworks.</p>
+                </div>
+                <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fa-solid fa-database"></i>
+                    <h3>Database Management</h3>
+                    <p>Efficient database architecture, PL/pgSQL functions, and optimizations across PostgreSQL, MySQL, and Sybase.</p>
+                </div>
+                <div class="service-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fa-solid fa-rocket"></i>
+                    <h3>Freelance & Hosting Solutions</h3>
+                    <p>Available for freelance projects. I offer end-to-end development, deployment, and hosting solutions for your business needs.</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
+    <!-- PROJECTS SECTION -->
+    <section id="projects">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Featured Projects</h2>
+            <div class="projects-grid">
+                
+                <!-- Sasreya Project -->
+                <div class="project-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="project-content">
+                        <h3>Sasreya</h3>
+                        <p class="tech-stack">Web Application • Responsive Design</p>
+                        <p>A beautifully crafted platform serving as one of my premier portfolio pieces. Designed with modern aesthetics and seamless user interactions to deliver a high-quality digital experience across all devices.</p>
+                        <a href="https://sasreya.netlify.app" target="_blank" class="btn btn-primary" style="text-align: center; margin-top: auto;">Visit Sasreya</a>
+                    </div>
+                </div>
+
+                <!-- Swapkart -->
+                <div class="project-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="project-content">
+                        <h3>Swapkart Application</h3>
+                        <p class="tech-stack">Java Spring Boot • PostgreSQL • Thymeleaf</p>
+                        <p>An innovative web-based platform facilitating the swap, sale, and donation of pre-owned goods. Features JWT authentication, role-based access, and location-based search to promote eco-conscious behavior.</p>
+                        <a href="https://swapkart-f1k7.onrender.com" target="_blank" class="btn btn-outline" style="text-align: center; margin-top: auto;">Live Demo</a>
+                    </div>
+                </div>
+
+                <!-- Uni-Messenger -->
+                <div class="project-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="project-content">
+                        <h3>Uni-Messenger</h3>
+                        <p class="tech-stack">Java • Spring Boot • REST APIs • JWT</p>
+                        <p>A centralized RESTful platform acting as a single source of truth for outgoing communications (SMS, WhatsApp, Email). Architected to handle complex routing, security, and global exception handling.</p>
+                        <button class="btn btn-outline" style="text-align: center; margin-top: auto; cursor: default;">Internal Project</button>
+                    </div>
+                </div>
+
+                <!-- Flower Mart -->
+                <div class="project-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="project-content">
+                        <h3>Flower Mart System</h3>
+                        <p class="tech-stack">Java Servlets • MySQL • UI/UX</p>
+                        <p>A comprehensive inventory and customer management system built to streamline orders, billing, and stock tracking for floral businesses.</p>
+                        <button class="btn btn-outline" style="text-align: center; margin-top: auto; cursor: default;">View Details</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Get In Touch</h2>
+            <div class="contact-wrapper" data-aos="fade-up" data-aos-delay="100">
+                <form id="contactForm">
+                    <div class="input-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea name="message" rows="5" placeholder="Tell me about your project or inquiry..." required></textarea>
+                    </div>
+                    
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_subject" value="New message from Modern Portfolio!">
+                    <input type="hidden" name="_template" value="table">
+                    
+                    <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; border:none;">Send Message <i class="fa-solid fa-paper-plane" style="margin-left:8px;"></i></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Rethish Kumar P A. Crafted with precision and passion.</p>
+    </footer>
+
+    <!-- SCRIPTS -->
     <script>
-        // --- 1. CONFIGURATION ---
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQkdpMJkEjlGqWVQmKUy9GZk_tabKkAxxgDrW5SGpe2r3vL-uoWOInuvhomxTdsrihJEhqfKvAQHFAK/pub?output=csv'; 
-        const WHATSAPP_NUMBER = '919446195202'; 
+        // Initialize AOS (Animate on Scroll)
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
 
-        // --- 2. APP LOGIC ---
-        let cart = [];
-        let globalProducts = []; 
-        let currentModalProductIndex = null;
-        let toastTimeout; 
+        // DOM Elements
+        const header = document.getElementById('header');
+        const navbar = document.getElementById('navbar');
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.querySelectorAll('nav a');
+        const sections = document.querySelectorAll('section');
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
 
-        // --- FIX: The Magic Malayalam Dictionary ---
-        const malayalamDict = {
-            "മാങ്ങ": "mango manga",
-            "അച്ചാർ": "pickle achar achaar",
-            "ചമ്മന്തി": "chammanthi chutney",
-            "പൊടി": "podi powder",
-            "ചക്ക": "chakka jackfruit",
-            "ഉപ്പേരി": "upperi chips",
-            "കപ്പ": "kappa tapioca cassava",
-            "മീൻ": "meen fish",
-            "മീനച്ചാർ": "meen fish pickle achar achaar",
-            "ബീഫ്": "beef erachi",
-            "ചുക്ക്": "chukku ginger dry",
-            "കാപ്പി": "kappi coffee kaappi",
-            "ഏത്തക്ക": "ethakka banana kaya kaaya",
-            "വറുത്തത്": "upperi chips fry",
-            "ശർക്കരപ്പരട്ടി": "sharkkaraperatti",
-            "കളിയടക്ക": "kaliyadakka kaliyodakka kadukadakka cheeda"
-        };
+        // Navbar Scroll Effect & Active Link Highlighting
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
 
-        Papa.parse(SHEET_CSV_URL, {
-            download: true,
-            header: true,
-            complete: function(results) {
-                // Automatically attach English words to Malayalam titles so search works smoothly
-                globalProducts = results.data.filter(p => p.name).map(p => {
-                    let searchString = (p.name + " " + p.description).toLowerCase();
-                    
-                    for (const [mal, eng] of Object.entries(malayalamDict)) {
-                        if (p.name.includes(mal) || p.description.includes(mal)) {
-                            searchString += " " + eng;
-                        }
-                    }
-                    
-                    p.hiddenSearchText = searchString;
-                    return p;
-                }); 
-                displayProducts();
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        menuBtn.addEventListener('click', () => {
+            navbar.classList.toggle('active');
+            const icon = menuBtn.querySelector('i');
+            if(navbar.classList.contains('active')){
+                icon.classList.replace('fa-bars', 'fa-xmark');
+            } else {
+                icon.classList.replace('fa-xmark', 'fa-bars');
             }
         });
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.add('show');
-            
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        function shareShop() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Sasreya Foods',
-                    text: 'Check out these amazing homemade pickles and snacks from Sasreya Foods!',
-                    url: window.location.href 
-                }).catch(console.error);
-            } else {
-                const shareUrl = `https://wa.me/?text=${encodeURIComponent("Check out Sasreya Foods: " + window.location.href)}`;
-                window.open(shareUrl, '_blank');
-            }
-        }
-
-        // --- FIX: Upgraded Multi-Word Smart Search ---
-        function filterProducts() {
-            const term = document.getElementById('search-input').value.toLowerCase().trim();
-            // Splits the search into multiple words (e.g. "mango" and "pickle")
-            const searchWords = term.split(' ').filter(w => w !== ''); 
-            const cards = document.querySelectorAll('.product-card');
-            
-            globalProducts.forEach((product, index) => {
-                // Checks if EVERY word typed exists in the hidden search string
-                const match = searchWords.every(word => product.hiddenSearchText.includes(word));
-                cards[index].style.display = match ? 'flex' : 'none';
+        // Close mobile menu on link click
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('active');
+                menuBtn.querySelector('i').classList.replace('fa-xmark', 'fa-bars');
             });
-        }
+        });
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(tabId + '-tab').classList.add('active');
+        // Theme Toggle Logic
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
             
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('nav-' + tabId).classList.add('active');
-            window.scrollTo(0, 0); 
-        }
-
-        function displayProducts() {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = ''; 
-
-            globalProducts.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.onclick = () => openProductModal(index);
-                
-                card.innerHTML = `
-                    <div class="image-container">
-                        <img src="${product.image}" alt="${product.name}">
-                        <div id="action-${index}" class="action-container" onclick="event.stopPropagation()"></div>
-                    </div>
-                    <h3 class="product-title">${product.name}</h3>
-                    <p class="product-desc">${product.description}</p>
-                    
-                    <div class="bottom-card-row" onclick="event.stopPropagation()">
-                        <select id="weight-${index}" class="weight-select" onchange="updateCardActionUI(${index})">
-                            <option value="" disabled selected>- size -</option>
-                            <option value="0.25">250 g</option>
-                            <option value="0.5">500 g</option>
-                            <option value="1">1 kg</option>
-                            <option value="2">2 kg</option>
-                        </select>
-                        <div class="price" id="price-${index}">₹${product.price}/kg</div>
-                    </div>
-                `;
-                productList.appendChild(card);
-                updateCardActionUI(index); 
-            });
-        }
-
-        function promptSelection(index) {
-            showToast("Please choose a size first! 👆");
-            document.getElementById(`weight-${index}`).focus();
-        }
-
-        function updateCardActionUI(index) {
-            const select = document.getElementById(`weight-${index}`);
-            const actionContainer = document.getElementById(`action-${index}`);
-            const priceContainer = document.getElementById(`price-${index}`);
-            const product = globalProducts[index];
-            
-            if (select.value === "") {
-                priceContainer.innerText = `₹${product.price}/kg`; 
-                actionContainer.innerHTML = `<button class="add-plus-btn" onclick="event.stopPropagation(); promptSelection(${index})">+</button>`;
-                return; 
-            }
-
-            const weightLabel = select.options[select.selectedIndex].text;
-            const weightMultiplier = parseFloat(select.value);
-            const currentPrice = Math.round(parseFloat(product.price) * weightMultiplier);
-            
-            priceContainer.innerText = `₹${currentPrice}`;
-            const cartItem = cart.find(i => i.name === product.name && i.weightLabel === weightLabel);
-
-            if (cartItem) {
-                actionContainer.innerHTML = `
-                    <div class="tiny-qty" onclick="event.stopPropagation()">
-                        <button onclick="updateQtyFromCard(${index}, -1)">-</button>
-                        <span>${cartItem.qty}</span>
-                        <button onclick="updateQtyFromCard(${index}, 1)">+</button>
-                    </div>
-                `;
+            const icon = themeToggle.querySelector('i');
+            if(newTheme === 'light') {
+                icon.classList.replace('fa-moon', 'fa-sun');
             } else {
-                actionContainer.innerHTML = `<button class="add-plus-btn" onclick="event.stopPropagation(); addToCart(${index}, ${currentPrice})">+</button>`;
+                icon.classList.replace('fa-sun', 'fa-moon');
             }
-        }
+        });
 
-        function openProductModal(index) {
-            currentModalProductIndex = index;
-            const product = globalProducts[index];
+        // Form Submission logic (SweetAlert)
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            document.getElementById('modal-img').src = product.image;
-            document.getElementById('modal-title').innerText = product.name;
-            document.getElementById('modal-desc').innerText = product.description;
-            
-            const cardSelect = document.getElementById(`weight-${index}`);
-            document.getElementById('modal-weight').value = cardSelect.value;
-            
-            updateModalUI();
-            document.getElementById('product-modal-overlay').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; 
-        }
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Sending... <i class="fa-solid fa-spinner fa-spin"></i>';
+            submitBtn.disabled = true;
 
-        function closeProductModal() {
-            document.getElementById('product-modal-overlay').style.display = 'none';
-            document.body.style.overflow = ''; 
-        }
+            const formData = new FormData(form);
 
-        function closeProductModalOutside(event) {
-            if (event.target.id === 'product-modal-overlay') {
-                closeProductModal();
-            }
-        }
-
-        function updateModalUI() {
-            const index = currentModalProductIndex;
-            const product = globalProducts[index];
-            const select = document.getElementById('modal-weight');
-            const priceContainer = document.getElementById('modal-price');
-            const actionContainer = document.getElementById('modal-action-container');
-            
-            document.getElementById(`weight-${index}`).value = select.value;
-            
-            if (select.value === "") {
-                priceContainer.innerText = `₹${product.price} / kg`;
-                actionContainer.innerHTML = `<button class="big-add-btn" onclick="showToast('Please choose a size first! 👆')">Add Item</button>`;
-                updateCardActionUI(index); 
-                return;
-            }
-
-            const weightLabel = select.options[select.selectedIndex].text;
-            const weightMultiplier = parseFloat(select.value);
-            const currentPrice = Math.round(parseFloat(product.price) * weightMultiplier);
-            
-            priceContainer.innerText = `₹${currentPrice}`;
-            
-            const cartItem = cart.find(i => i.name === product.name && i.weightLabel === weightLabel);
-            
-            if (cartItem) {
-                actionContainer.innerHTML = `
-                    <div class="modal-qty-controls">
-                        <button onclick="changeCartQty('${product.name}', '${weightLabel}', -1); updateModalUI();">-</button>
-                        <span>${cartItem.qty} in cart</span>
-                        <button onclick="changeCartQty('${product.name}', '${weightLabel}', 1); updateModalUI();">+</button>
-                    </div>
-                `;
-            } else {
-                actionContainer.innerHTML = `<button class="big-add-btn" onclick="addToCart(${index}, ${currentPrice}); updateModalUI();">Add to Cart</button>`;
-            }
-            
-            updateCardActionUI(index);
-        }
-
-        function addToCart(index, calculatedPrice) {
-            const select = document.getElementById(`weight-${index}`);
-            const weightLabel = select.options[select.selectedIndex].text;
-            const product = globalProducts[index];
-            cart.push({ name: product.name, weightLabel: weightLabel, price: calculatedPrice, qty: 1 });
-            showToast(`Added ${product.name} to cart! 😋`);
-            updateCartUI();
-        }
-
-        function updateQtyFromCard(index, change) {
-            const select = document.getElementById(`weight-${index}`);
-            changeCartQty(globalProducts[index].name, select.options[select.selectedIndex].text, change);
-        }
-
-        function changeCartQty(name, weightLabel, change) {
-            const itemIndex = cart.findIndex(i => i.name === name && i.weightLabel === weightLabel);
-            if (itemIndex > -1) {
-                cart[itemIndex].qty += change;
-                if (cart[itemIndex].qty <= 0) {
-                    cart.splice(itemIndex, 1);
-                    showToast("Item removed from cart.");
-                }
-            }
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartTotal = document.getElementById('cart-total');
-            cartItemsContainer.innerHTML = '';
-            let totalMoney = 0; let totalItems = 0;
-
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p style="color: #777;">Your cart is empty.</p>';
-            } else {
-                cart.forEach(item => {
-                    totalMoney += item.price * item.qty;
-                    totalItems += item.qty;
-                    cartItemsContainer.innerHTML += `
-                        <div class="cart-item">
-                            <div class="cart-item-details">
-                                <strong style="font-size: 1.1em;">${item.name}</strong>
-                                <small>${item.weightLabel} - ₹${item.price}</small>
-                            </div>
-                            <div class="cart-qty">
-                                <button onclick="changeCartQty('${item.name}', '${item.weightLabel}', -1)">-</button>
-                                <span>${item.qty}</span>
-                                <button onclick="changeCartQty('${item.name}', '${item.weightLabel}', 1)">+</button>
-                            </div>
-                        </div>
-                    `;
+            try {
+                const response = await fetch("https://formsubmit.co/ajax/rathishnote7@gmail.com", {
+                    method: "POST",
+                    body: formData
                 });
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Message Sent!',
+                        text: "Thanks for reaching out. I'll get back to you shortly.",
+                        icon: 'success',
+                        confirmButtonText: 'Awesome',
+                        confirmButtonColor: '#3b82f6',
+                        background: html.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff',
+                        color: html.getAttribute('data-theme') === 'dark' ? '#f8fafc' : '#0f172a'
+                    });
+                    form.reset();
+                } else {
+                    throw new Error('Network Error');
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: "Something went wrong. Please try again later.",
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444',
+                    background: html.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff',
+                    color: html.getAttribute('data-theme') === 'dark' ? '#f8fafc' : '#0f172a'
+                });
+            } finally {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
             }
-
-            cartTotal.innerText = totalMoney;
-            const floatingBtn = document.getElementById('floating-cart');
-            const floatingBadge = document.getElementById('floating-badge');
-            const navBadge = document.getElementById('nav-cart-badge');
-
-            if (totalItems > 0) {
-                floatingBtn.style.display = 'flex';
-                floatingBadge.innerText = totalItems;
-                navBadge.style.display = 'inline-block';
-                navBadge.innerText = totalItems;
-            } else {
-                floatingBtn.style.display = 'none';
-                navBadge.style.display = 'none';
-            }
-
-            globalProducts.forEach((_, index) => {
-                if (document.getElementById(`weight-${index}`)) updateCardActionUI(index);
-            });
-            
-            if (currentModalProductIndex !== null && document.getElementById('product-modal-overlay').style.display === 'flex') {
-                updateModalUI();
-            }
-        }
-
-        function openCheckoutModal() {
-            if (cart.length === 0) { 
-                showToast("Your cart is empty! 🛒"); 
-                switchTab('products'); 
-                return; 
-            }
-
-            const savedName = localStorage.getItem('sasreya_name');
-            const savedPhone = localStorage.getItem('sasreya_phone');
-            const savedPlace = localStorage.getItem('sasreya_place');
-            const isWizzmoniSaved = localStorage.getItem('sasreya_wizzmoni');
-
-            if (savedName) document.getElementById('cust-name').value = savedName;
-            if (savedPhone) document.getElementById('cust-phone').value = savedPhone;
-            
-            if (isWizzmoniSaved === 'true') {
-                document.getElementById('is-wizzmoni').checked = true;
-                togglePlaceInput(); 
-            } else if (savedPlace) {
-                document.getElementById('cust-place').value = savedPlace;
-            }
-
-            document.getElementById('checkout-modal').style.display = 'flex';
-        }
-
-        function closeCheckoutModal() {
-            document.getElementById('checkout-modal').style.display = 'none';
-        }
-
-        function togglePlaceInput() {
-            const isWizzmoni = document.getElementById('is-wizzmoni').checked;
-            const placeContainer = document.getElementById('place-container');
-            const placeInput = document.getElementById('cust-place');
-            if (isWizzmoni) {
-                placeContainer.style.display = 'none';
-                placeInput.value = 'Wizzmoni, deliver via Rethish'; 
-            } else {
-                placeContainer.style.display = 'block';
-                placeInput.value = ''; 
-            }
-        }
-
-        function submitOrder() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-            const place = document.getElementById('cust-place').value.trim();
-
-            if (!name || !phone || !place) { 
-                showToast("Please fill in all details! 📝"); 
-                return; 
-            }
-
-            const cleanPhone = phone.replace(/[\s\-\+]/g, ''); 
-            const phoneRegex = /^(?:91|0)?[6-9]\d{9}$/; 
-            if (!phoneRegex.test(cleanPhone)) { 
-                showToast("Invalid mobile number! 📱"); 
-                document.getElementById('cust-phone').focus(); 
-                return; 
-            }
-
-            localStorage.setItem('sasreya_name', name);
-            localStorage.setItem('sasreya_phone', phone);
-            localStorage.setItem('sasreya_wizzmoni', document.getElementById('is-wizzmoni').checked);
-            if (!document.getElementById('is-wizzmoni').checked) {
-                localStorage.setItem('sasreya_place', place);
-            }
-
-            let message = `Hello *Sasreya Foods*! 👋\nI would like to place an order. Here are my details:\n\n`;
-            message += `👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n📍 *Place:* ${place}\n-------------------------------------\n*My Order Items:*\n`;
-            
-            let total = 0;
-            cart.forEach(item => {
-                message += `▪ ${item.qty} x ${item.name} [Size: ${item.weightLabel}] = ₹${item.price * item.qty}\n`;
-                total += item.price * item.qty;
-            });
-
-            message += `\n*Total Amount: ₹${total}*\n`;
-            const currentYear = new Date().getFullYear();
-            message += `\n*© ${currentYear} sasreya.netlify.app*\n`;
-
-            const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfC6pjkbK86p4Yen5-X5t8Aga7N0DmUxoCJSpkbxgM1qeAFuQ/formResponse';
-            const ENTRY_ID = 'entry.1325426780';
-
-            const formData = new URLSearchParams();
-            formData.append(ENTRY_ID, message);
-
-            fetch(FORM_URL, {
-                method: 'POST', mode: 'no-cors', 
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData.toString()
-            }).then(() => console.log("Order saved.")).catch((e) => console.error(e));
-
-            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-
-            cart = [];
-            closeCheckoutModal();
-            updateCartUI();
-            switchTab('products');
-            showToast("Order Sent to WhatsApp! ✅");
-        }
+        });
     </script>
 </body>
 </html>

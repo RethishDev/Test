@@ -93,29 +93,29 @@
         const RESPONSES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMoaZvcXqrD0KWIEHEOdCFjHUMNu9NMUkhJxOoir9fDwMNJtO55Lkp1C4vWAgXlVbJ8v1BIz7CtiuU/pub?output=csv';
         const PRODUCTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQkdpMJkEjlGqWVQmKUy9GZk_tabKkAxxgDrW5SGpe2r3vL-uoWOInuvhomxTdsrihJEhqfKvAQHFAK/pub?output=csv';
 
-        let allProducts = {}; // Stores name -> base price
+        let allProducts = {}; 
         let rawOrders = [];
         let currentEditingOrder = { row: null, name: '', phone: '', place: '', items: [] };
 
-        // 1. Fetch Data
-        Promise.all([
-            fetch(PRODUCTS_CSV_URL).then(res => res.text()),
-            fetch(RESPONSES_CSV_URL).then(res => res.text())
-        ]).then(([productsCSV, responsesCSV]) => {
-            
-            // Parse Products
-            Papa.parse(productsCSV, { header: true, complete: function(res) {
+        // 1. BULLETPROOF DATA FETCHING
+        Papa.parse(PRODUCTS_CSV_URL, {
+            download: true,
+            header: true,
+            complete: function(res) {
                 res.data.forEach(p => {
                     if(p.name) allProducts[p.name] = parseInt(p.price);
                 });
                 populateProductDropdown();
-            }});
+            }
+        });
 
-            // Parse Orders
-            Papa.parse(responsesCSV, { header: true, complete: function(res) {
+        Papa.parse(RESPONSES_CSV_URL, {
+            download: true,
+            header: true,
+            complete: function(res) {
                 rawOrders = res.data;
                 populateOrderDropdown();
-            }});
+            }
         });
 
         function populateProductDropdown() {
@@ -132,14 +132,15 @@
             // Loop backwards to show newest first
             for (let i = rawOrders.length - 1; i >= 0; i--) {
                 const row = rawOrders[i];
-                const rawText = row[Object.keys(row)[1]]; // Col B Text
-                if (!rawText) continue;
+                // Safely grab the text regardless of column name
+                const rawText = row[Object.keys(row)[1]]; 
+                if (!rawText || rawText.trim() === '') continue;
 
-                const nameMatch = rawText.match(/👤 \*Name:\* (.*?)\n/);
+                // SMART REGEX: Works even if the old orders don't have the 👤 emoji
+                const nameMatch = rawText.match(/(?:👤 )?\*Name:\* (.*?)(?:\r?\n|$)/);
                 const name = nameMatch ? nameMatch[1].trim() : 'Unknown';
-                const date = row[Object.keys(row)[0]]; // Col A Time
+                const date = row[Object.keys(row)[0]]; 
                 
-                // Actual Google Sheet row = Index + 2 (because of headers)
                 select.innerHTML += `<option value="${i}">Row ${i + 2}: ${name} (${date})</option>`;
             }
         }
@@ -154,12 +155,12 @@
             const rowData = rawOrders[orderIndex];
             const rawText = rowData[Object.keys(rowData)[1]];
             
-            // Extract details using Regex
-            const nameMatch = rawText.match(/👤 \*Name:\* (.*?)\n/);
-            const phoneMatch = rawText.match(/📞 \*Phone:\* (.*?)\n/);
-            const placeMatch = rawText.match(/📍 \*Place:\* (.*?)\n/);
+            // SMART REGEX: Safely extracts data with or without emojis
+            const nameMatch = rawText.match(/(?:👤 )?\*Name:\* (.*?)(?:\r?\n|$)/);
+            const phoneMatch = rawText.match(/(?:📞 )?\*Phone:\* (.*?)(?:\r?\n|$)/);
+            const placeMatch = rawText.match(/(?:📍 )?\*Place:\* (.*?)(?:\r?\n|$)/);
 
-            currentEditingOrder.row = parseInt(orderIndex) + 2; // Sheet row number
+            currentEditingOrder.row = parseInt(orderIndex) + 2; 
             currentEditingOrder.name = nameMatch ? nameMatch[1].trim() : '';
             currentEditingOrder.phone = phoneMatch ? phoneMatch[1].trim() : '';
             currentEditingOrder.place = placeMatch ? placeMatch[1].trim() : '';
@@ -261,7 +262,8 @@
             });
 
             newText += `\n*Total Amount: ₹${finalTotal}*\n`;
-            newText += `\n*© 2026 sasreya.netlify.app*\n`;
+            const currentYear = new Date().getFullYear();
+            newText += `\n*© ${currentYear} sasreya.netlify.app*\n`;
 
             // 2. Send to Google Apps Script
             const formData = new URLSearchParams();
@@ -272,12 +274,12 @@
 
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Tells browser to allow sending without pre-flight blocks
+                mode: 'no-cors', 
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData.toString()
             }).then(() => {
                 alert("Order updated perfectly! The Settlement Calculator will now use these new numbers.");
-                window.location.reload(); // Refresh to pull new data
+                window.location.reload(); 
             });
         }
     </script>

@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wayanad Farm Fresh — Pure Spices & Coffee Farmed in Wayanad</title>
+  <meta name="description" content="Pure Spices & Coffee Farmed in Wayanad. Order farm-fresh pepper, coffee, ginger, turmeric, and kudampuli directly via WhatsApp." />
+  <meta name="theme-color" content="#1b5e20" />
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    :root {
+      --primary: #1b5e20;
+      --primary-dark: #124116;
+      --primary-light: #e8f5e9;
+      --accent: #d35400;
+      --accent-dark: #b34700;
+      --accent-light: #fff3e0;
+      --bg: #f5f7f5;
+      --surface: #ffffff;
+      --text: #1c241d;
+      --text-muted: #5c6b5e;
+      --border: #dfe6e0;
+      --danger: #c62828;
+      --shadow-sm: 0 2px 8px rgba(27, 94, 32, 0.06);
+      --shadow-md: 0 6px 20px rgba(27, 94, 32, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --sidebar-width: 270px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    /* Animated SVG Logo */
+    .logo-svg {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .logo-leaf-left {
+      transform-origin: 23px 28px;
+      animation: leafSwayLeft 3.4s ease-in-out infinite;
+    }
+
+    .logo-leaf-right {
+      transform-origin: 23px 28px;
+      animation: leafSwayRight 3.4s ease-in-out infinite;
+    }
+
+    .logo-bean {
+      transform-origin: 23px 26px;
+      animation: beanPulse 3.4s ease-in-out infinite;
+    }
+
+    @keyframes leafSwayLeft {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(-6deg); }
+    }
+
+    @keyframes leafSwayRight {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(6deg); }
+    }
+
+    @keyframes beanPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    /* App Layout */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    /* Desktop Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 18px;
+      z-index: 40;
+      box-shadow: 2px 0 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .brand-info h1 {
+      margin: 0;
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      color: #ffffff;
+    }
+
+    .brand-info p {
+      margin: 3px 0 0;
+      font-size: 0.74rem;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.25;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+      text-align: left;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .nav-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-badge {
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-badge.hidden {
+      display: none;
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .share-desktop-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .share-desktop-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Mobile Header & Tabs (Hidden on Desktop) */
+    .mobile-header {
+      display: none;
+    }
+
+    .mobile-tabs {
+      display: none;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+      padding: 20px 24px 96px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Announcement Banner */
+    .announcement-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+      color: #ffffff;
+      padding: 11px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      min-height: 44px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .announcement-banner.visible {
+      display: flex;
+    }
+
+    .announcement-icon {
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .announcement-text-wrap {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .typewriter-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #ffd54f;
+      margin-left: 2px;
+      vertical-align: -2px;
+      animation: blinkCursor 0.75s step-end infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Search Bar */
+    .search-bar-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 42px 12px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: #edf2ee;
+      color: var(--text-muted);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-clear.visible {
+      display: flex;
+    }
+
+    /* Section Views */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Product Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      position: relative;
+      min-width: 0;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .product-card.out-of-stock {
+      opacity: 0.85;
+    }
+
+    .product-img-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #eef3ee;
+      overflow: hidden;
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card.out-of-stock .product-img {
+      filter: grayscale(100%) brightness(0.75);
+    }
+
+    .oos-badge {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.38);
+      pointer-events: none;
+    }
+
+    .oos-badge span {
+      background: var(--danger);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Zepto-Style Floating + / - qty + Control on Image */
+    .card-action-float {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      z-index: 5;
+    }
+
+    .btn-plus {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1.5px solid var(--primary);
+      background: #ffffff;
+      color: var(--primary);
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+      transition: background 0.15s, color 0.15s, transform 0.12s;
+    }
+
+    .btn-plus:active {
+      transform: scale(0.92);
+    }
+
+    .btn-plus:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .qty-pill {
+      display: inline-flex;
+      align-items: center;
+      background: var(--primary);
+      color: #ffffff;
+      border-radius: 10px;
+      height: 34px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(27, 94, 32, 0.3);
+    }
+
+    .qty-pill button {
+      width: 28px;
+      height: 34px;
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qty-pill button:active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .qty-pill span {
+      min-width: 22px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .product-body {
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .product-title {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-desc {
+      margin: 0;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.35;
+      min-height: 2.7em;
+    }
+
+    .product-controls {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .size-select {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #f9fbf9;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .size-select:focus {
+      border-color: var(--primary);
+    }
+
+    .size-select:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .product-price {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .unit-tag {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Cart View */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .btn-text-danger {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-text-danger:hover {
+      background: #ffebee;
+    }
+
+    .cart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .cart-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cart-item-img {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: #eef3ee;
+      flex-shrink: 0;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cart-item-title {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .cart-item-price {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 4px;
+    }
+
+    .cart-summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .summary-row.total {
+      border-top: 1px dashed var(--border);
+      padding-top: 12px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .btn-primary-full {
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(211, 84, 0, 0.28);
+      transition: background 0.2s, transform 0.12s;
+    }
+
+    .btn-primary-full:hover {
+      background: var(--accent-dark);
+    }
+
+    .btn-primary-full:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary-full:disabled {
+      background: #b0bec5;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-green-full {
+      background: var(--primary);
+      box-shadow: 0 4px 14px rgba(27, 94, 32, 0.25);
+    }
+
+    .btn-green-full:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 6px;
+      color: var(--text);
+      font-size: 1.05rem;
+    }
+
+    .empty-state p {
+      margin: 0 0 18px;
+      font-size: 0.88rem;
+    }
+
+    .btn-outline {
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    /* My Orders Tab */
+    .orders-lookup-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .orders-lookup-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #ffffff;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-lookup {
+      padding: 0 18px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .order-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eef2ef;
+    }
+
+    .order-date {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .order-status-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .order-body-pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: inherit;
+      font-size: 0.86rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Secret Admin Home Screen */
+    .admin-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--primary-dark);
+      color: #ffffff;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+    }
+
+    .admin-header-bar h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .admin-header-bar p {
+      margin: 2px 0 0;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-back-store {
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .admin-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .admin-card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .admin-card h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+
+    .admin-card p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Floating Cart Button */
+    .floating-cart-btn {
+      position: fixed;
+      right: 18px;
+      bottom: 20px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(211, 84, 0, 0.42);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      transition: transform 0.15s ease;
+    }
+
+    .floating-cart-btn.visible {
+      display: flex;
+    }
+
+    .floating-cart-btn:active {
+      transform: scale(0.92);
+    }
+
+    .floating-cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--primary);
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      font-size: 0.74rem;
+      font-weight: 800;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 5px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Modals (Bottom-Sheet on Mobile, Centered on Desktop) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 24, 14, 0.56);
+      backdrop-filter: blur(2px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: var(--surface);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+      position: relative;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+      z-index: 10;
+    }
+
+    .modal-product-img {
+      width: 100%;
+      aspect-ratio: 16 / 11;
+      object-fit: cover;
+      background: #eef3ee;
+      display: block;
+    }
+
+    .modal-product-img.oos {
+      filter: grayscale(100%) brightness(0.75);
+    }
+
+    .modal-body {
+      padding: 18px 20px 22px;
+    }
+
+    .modal-title {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .modal-desc {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .modal-price-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: var(--radius-md);
+    }
+
+    .modal-price-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .modal-size-select {
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 140px;
+    }
+
+    .modal-qty-full {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--primary);
+      color: #ffffff;
+      border-radius: var(--radius-md);
+      height: 48px;
+      overflow: hidden;
+    }
+
+    .modal-qty-full button {
+      width: 56px;
+      height: 100%;
+      border: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      font-size: 1.4rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-qty-full span {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    /* Checkout Form */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    textarea.input-field {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .checkout-mini-summary {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #1c241d;
+      color: #ffffff;
+      padding: 11px 18px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 200;
+      opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: var(--danger);
+    }
+
+    .toast.success {
+      background: var(--primary);
+    }
+
+    /* Loading Skeleton */
+    .skeleton-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      padding-bottom: 12px;
+    }
+
+    .skeleton-box {
+      background: linear-gradient(90deg, #e8eee9 25%, #f3f7f4 50%, #e8eee9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1100px) {
+      .products-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 45;
+        background: var(--primary);
+        color: #ffffff;
+        padding: 10px 14px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+        width: 100%;
+      }
+
+      .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .mobile-brand h1 {
+        margin: 0;
+        font-size: 1.02rem;
+        font-weight: 800;
+        line-height: 1.18;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .mobile-brand p {
+        margin: 2px 0 0;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.86);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .mobile-share-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      .mobile-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 66px;
+        z-index: 40;
+        width: 100%;
+      }
+
+      .mobile-tab-btn {
+        padding: 11px 6px;
+        border: none;
+        border-bottom: 3px solid transparent;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .mobile-tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: #f8fbf8;
+      }
+
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 12px 12px 92px;
+      }
+
+      /* Strictly equal-width 2-column mobile grid */
+      .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      /* Bottom-sheet modal on mobile */
+      .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .modal-sheet {
+        max-width: 100%;
+        border-radius: 22px 22px 0 0;
+        max-height: 88vh;
+        animation: slideUpSheet 0.24s ease-out;
+      }
+
+      @keyframes slideUpSheet {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div class="app-shell">
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="brand-block">
+        <svg class="logo-svg" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wayanad Farm Fresh Logo">
+          <circle cx="23" cy="23" r="22" fill="#ffffff" stroke="#d35400" stroke-width="2" />
+          <circle cx="23" cy="23" r="18" fill="#e8f5e9" />
+          <path class="logo-leaf-left" d="M23 28C15 26 11 19 13 12C19 13 23 19 23 28Z" fill="#2e7d32" />
+          <path class="logo-leaf-right" d="M23 28C31 26 35 19 33 12C27 13 23 19 23 28Z" fill="#1b5e20" />
+          <g class="logo-bean">
+            <ellipse cx="23" cy="27" rx="7.5" ry="9.5" fill="#d35400" stroke="#ffffff" stroke-width="1.5" />
+            <path d="M23 19C20.5 23 25.5 31 23 35" stroke="#fff3e0" stroke-width="1.8" stroke-linecap="round" />
+          </g>
+        </svg>
+        <div class="brand-info">
+          <h1>Wayanad Farm Fresh</h1>
+          <p>Pure Spices & Coffee Farmed in Wayanad</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <button class="nav-btn active" data-tab="products">
+          <span class="nav-btn-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Products
+          </span>
+        </button>
+        <button class="nav-btn" data-tab="cart">
+          <span class="nav-btn-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Cart
+          </span>
+          <span class="nav-badge hidden" id="desktopCartBadge">0</span>
+        </button>
+        <button class="nav-btn" data-tab="orders">
+          <span class="nav-btn-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            My Orders
+          </span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="share-desktop-btn" id="desktopShareBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share Store
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile Sticky Header -->
+    <header class="mobile-header">
+      <div class="mobile-brand">
+        <svg class="logo-svg" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wayanad Farm Fresh Logo">
+          <circle cx="23" cy="23" r="22" fill="#ffffff" stroke="#d35400" stroke-width="2" />
+          <circle cx="23" cy="23" r="18" fill="#e8f5e9" />
+          <path class="logo-leaf-left" d="M23 28C15 26 11 19 13 12C19 13 23 19 23 28Z" fill="#2e7d32" />
+          <path class="logo-leaf-right" d="M23 28C31 26 35 19 33 12C27 13 23 19 23 28Z" fill="#1b5e20" />
+          <g class="logo-bean">
+            <ellipse cx="23" cy="27" rx="7.5" ry="9.5" fill="#d35400" stroke="#ffffff" stroke-width="1.5" />
+            <path d="M23 19C20.5 23 25.5 31 23 35" stroke="#fff3e0" stroke-width="1.8" stroke-linecap="round" />
+          </g>
+        </svg>
+        <div style="min-width:0;">
+          <h1>Wayanad Farm Fresh</h1>
+          <p>Pure Spices & Coffee Farmed in Wayanad</p>
+        </div>
+      </div>
+      <button class="mobile-share-btn" id="mobileShareBtn" aria-label="Share Store">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+    </header>
+
+    <!-- Mobile 3-Tab Navigation -->
+    <nav class="mobile-tabs" aria-label="Mobile Navigation">
+      <button class="mobile-tab-btn active" data-tab="products">Products</button>
+      <button class="mobile-tab-btn" data-tab="cart">
+        Cart <span class="nav-badge hidden" id="mobileCartBadge">0</span>
+      </button>
+      <button class="mobile-tab-btn" data-tab="orders">My Orders</button>
+    </nav>
+
+    <!-- Main Scrollable Area -->
+    <main class="main-content">
+      <div class="container">
+        <!-- Live Animated Announcement Banner -->
+        <div id="announcementBanner" class="announcement-banner" role="region" aria-label="Store Announcements">
+          <span class="announcement-icon">📢</span>
+          <div class="announcement-text-wrap">
+            <span id="announcementText"></span><span class="typewriter-cursor"></span>
+          </div>
+        </div>
+
+        <!-- PRODUCTS VIEW -->
+        <section id="view-products" class="view-section active">
+          <div class="search-bar-wrap">
+            <span class="search-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input
+              type="search"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search pepper, kappi, chukku, manjal, kudampuli..."
+              autocomplete="off"
+            />
+            <button type="button" id="searchClear" class="search-clear" aria-label="Clear search">×</button>
+          </div>
+
+          <div id="productsGrid" class="products-grid"></div>
+        </section>
+
+        <!-- CART VIEW -->
+        <section id="view-cart" class="view-section">
+          <div class="section-header">
+            <h2>Your Cart</h2>
+            <button type="button" id="clearCartBtn" class="btn-text-danger" style="display:none;">Clear Cart</button>
+          </div>
+          <div id="cartContainer"></div>
+        </section>
+
+        <!-- MY ORDERS VIEW -->
+        <section id="view-orders" class="view-section">
+          <div class="section-header">
+            <h2>My Orders</h2>
+          </div>
+          <div class="orders-lookup-card">
+            <label for="orderPhoneInput" class="form-label">Track Past Orders by Mobile Number</label>
+            <form id="orderLookupForm" class="orders-lookup-form">
+              <input
+                type="tel"
+                id="orderPhoneInput"
+                class="input-field"
+                placeholder="Enter 10-digit mobile number"
+                inputmode="numeric"
+                maxlength="15"
+              />
+              <button type="submit" class="btn-lookup">Find Orders</button>
+            </form>
+          </div>
+          <div id="ordersList" class="orders-list"></div>
+        </section>
+
+        <!-- SECRET ADMIN HOME SCREEN -->
+        <section id="view-admin" class="view-section">
+          <div class="admin-header-bar">
+            <div>
+              <h2>Admin Control Center</h2>
+              <p>Wayanad Farm Fresh — Store Management</p>
+            </div>
+            <button type="button" id="backToStoreBtn" class="btn-back-store">← Back to Store</button>
+          </div>
+
+          <div class="admin-grid">
+            <a href="history.html" class="admin-card">
+              <div class="admin-card-icon">📋</div>
+              <h3>Order History</h3>
+              <p>Browse, filter, and inspect all customer orders.</p>
+            </a>
+            <a href="editor.html" class="admin-card">
+              <div class="admin-card-icon">✏️</div>
+              <h3>Apps Script Order Editor</h3>
+              <p>Update order statuses and edit customer entries.</p>
+            </a>
+            <a href="admin.html" class="admin-card">
+              <div class="admin-card-icon">🧮</div>
+              <h3>Settlement Calculator</h3>
+              <p>Calculate farm payouts, margins, and daily totals.</p>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener" id="adminProductsSheetLink" class="admin-card">
+              <div class="admin-card-icon">📊</div>
+              <h3>Open Products Sheet</h3>
+              <p>Edit prices, stock toggles, and live announcements.</p>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener" id="adminResponsesSheetLink" class="admin-card">
+              <div class="admin-card-icon">📑</div>
+              <h3>Open Responses Sheet</h3>
+              <p>View raw Google Form order submissions in Sheets.</p>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating Cart Button -->
+  <button type="button" id="floatingCartBtn" class="floating-cart-btn" aria-label="Open Cart">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <span class="floating-cart-badge" id="floatingCartBadge">0</span>
+  </button>
+
+  <!-- Product Details Bottom-Sheet Modal -->
+  <div id="productModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
+    <div class="modal-sheet">
+      <button type="button" class="modal-close-btn" id="closeProductModal" aria-label="Close">×</button>
+      <img id="modalProductImg" class="modal-product-img" src="" alt="" />
+      <div class="modal-body">
+        <h3 id="modalProductTitle" class="modal-title"></h3>
+        <p id="modalProductDesc" class="modal-desc"></p>
+        <div class="modal-price-bar">
+          <div>
+            <div style="font-size:0.74rem; color:var(--text-muted); font-weight:600;">Price</div>
+            <div id="modalProductPrice" class="modal-price-value">₹0</div>
+          </div>
+          <select id="modalSizeSelect" class="modal-size-select" aria-label="Select Pack Size"></select>
+        </div>
+        <div id="modalActionContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkoutModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
+    <div class="modal-sheet">
+      <button type="button" class="modal-close-btn" id="closeCheckoutModal" aria-label="Close">×</button>
+      <div class="modal-body">
+        <h3 id="checkoutModalTitle" class="modal-title" style="margin-bottom:14px;">Delivery Details</h3>
+        <div id="checkoutMiniSummary" class="checkout-mini-summary"></div>
+        <form id="checkoutForm" novalidate>
+          <div class="form-group">
+            <label for="custName" class="form-label">Full Name *</label>
+            <input type="text" id="custName" class="input-field" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="custPhone" class="form-label">Mobile Number (10 digits) *</label>
+            <input type="tel" id="custPhone" class="input-field" placeholder="e.g. 9876543210" inputmode="numeric" maxlength="10" required />
+          </div>
+          <div class="form-group">
+            <label for="custAddress" class="form-label">Delivery Address & Pincode *</label>
+            <textarea id="custAddress" class="input-field" placeholder="House name, street, landmark, city, pincode" required></textarea>
+          </div>
+          <button type="submit" id="submitOrderBtn" class="btn-primary-full btn-green-full">
+            Place Order on WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      // ==========================================
+      // 1. CONFIGURATION
+      // ==========================================
+      const CONFIG = {
+        brandName: "Wayanad Farm Fresh",
+        tagline: "Pure Spices & Coffee Farmed in Wayanad",
+        whatsappNumber: "918590360735",
+        productsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjR1C6Vp_ecdkKYF6cO2zRE3B8geHXb4SUFU57g-eOFUCRS6jRv-aE66NChKgnkEXCjKsz-sWePqF8/pub?gid=1756612013&single=true&output=csv",
+        ordersCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRYN4GykKjslabTW2aDjHnDV0HjCEgjE_MlGG5yFJHu3ZAAXBjVey9-rlDN97gSlIF3LTjlBjPI7UZj/pub?gid=768478150&single=true&output=csv",
+        formResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfhJsxMl1ItAVjD4xtmmtEZZbvGfu9Aazt_L9ml9BuiViQG7w/formResponse",
+        formEntryId: "entry.1571825356",
+        // Optional: replace with your direct editable Google Sheets URLs for the Admin Home Screen
+        productsEditSheetUrl: "https://docs.google.com/spreadsheets/",
+        responsesEditSheetUrl: "https://docs.google.com/spreadsheets/"
+      };
+
+      const WEIGHT_TIERS = [
+        { key: "p100", label: "100g" },
+        { key: "p250", label: "250g" },
+        { key: "p500", label: "500g" },
+        { key: "p1000", label: "1kg" }
+      ];
+
+      // Malayalam / Manglish Search Synonym Dictionary
+      const SEARCH_SYNONYMS = {
+        kurumulaku: ["pepper", "black pepper", "green pepper", "pacha", "കുരുമുളക്"],
+        pepper: ["kurumulaku", "pacha", "black", "green", "കുരുമുളക്"],
+        pacha: ["green pepper", "kurumulaku"],
+        kappi: ["coffee", "coffee powder", "coffee mix", "കാപ്പി"],
+        kaappi: ["coffee", "coffee powder", "coffee mix", "കാപ്പി"],
+        coffee: ["kappi", "kaappi", "കാപ്പി"],
+        chukku: ["dry ginger", "ginger", "ചുക്ക്"],
+        inchi: ["fresh ginger", "ginger", "ഇഞ്ചി"],
+        inji: ["fresh ginger", "ginger", "ഇഞ്ചി"],
+        ginger: ["chukku", "inchi", "inji", "ചുക്ക്", "ഇഞ്ചി"],
+        manjal: ["turmeric", "മഞ്ഞൾ"],
+        manhal: ["turmeric", "മഞ്ഞൾ"],
+        turmeric: ["manjal", "manhal", "മഞ്ഞൾ"],
+        kudampuli: ["malabar tamarind", "tamarind", "puli", "കുടംപുളി"],
+        kodampuli: ["malabar tamarind", "tamarind", "puli", "കുടംപുളി"],
+        tamarind: ["kudampuli", "kodampuli", "puli", "കുടംപുളി"],
+        puli: ["kudampuli", "tamarind", "കുടംപുളി"],
+        "കുരുമുളക്": ["pepper", "kurumulaku"],
+        "കാപ്പി": ["coffee", "kappi"],
+        "ചുക്ക്": ["dry ginger", "chukku"],
+        "ഇഞ്ചി": ["fresh ginger", "inchi"],
+        "മഞ്ഞൾ": ["turmeric", "manjal"],
+        "കുടംപുളി": ["kudampuli", "tamarind"]
+      };
+
+      // Fallback Wayanad Catalog
+      const SAMPLE_PRODUCTS = [
+        {
+          name: "Green Pepper (Pacha Kurumulaku)",
+          description: "Fresh green peppercorns with natural aroma and flavour.",
+          image: "",
+          p100: 90, p250: 210, p500: 400, p1000: 750,
+          stock: "in"
+        },
+        {
+          name: "Black Pepper (Dried)",
+          description: "Naturally dried black pepper with a rich aroma and strong flavour.",
+          image: "",
+          p100: 100, p250: 230, p500: 450, p1000: 880,
+          stock: "in"
+        },
+        {
+          name: "Pure Coffee Powder",
+          description: "Rich and aromatic coffee powder for everyday coffee preparation.",
+          image: "",
+          p100: 110, p250: 260, p500: 500, p1000: 950,
+          stock: "in"
+        },
+        {
+          name: "Wayanadan Traditional Coffee Mix",
+          description: "Coffee powder blended with aromatic spices such as cardamom, dry ginger, cinnamon, cloves and fenugreek.",
+          image: "",
+          p100: 130, p250: 300, p500: 580, p1000: 1100,
+          stock: "in"
+        },
+        {
+          name: "Dry Ginger (Chukku)",
+          description: "Quality dried ginger with a distinctive aroma and flavour.",
+          image: "",
+          p100: 65, p250: 150, p500: 290, p1000: 550,
+          stock: "in"
+        },
+        {
+          name: "Fresh Ginger (Inchi)",
+          description: "Fresh ginger suitable for cooking and traditional preparations.",
+          image: "",
+          p100: "", p250: 40, p500: 80, p1000: 150,
+          stock: "in"
+        },
+        {
+          name: "Turmeric (Manjal)",
+          description: "Natural turmeric with earthy flavour and rich colour.",
+          image: "",
+          p100: 40, p250: 90, p500: 170, p1000: 320,
+          stock: "in"
+        },
+        {
+          name: "Kudampuli (Malabar Tamarind)",
+          description: "Traditional dried Malabar tamarind used in Kerala cooking, especially fish curry.",
+          image: "",
+          p100: 70, p250: 160, p500: 310, p1000: 600,
+          stock: "in"
+        }
+      ];
+
+      // ==========================================
+      // 2. STATE MANAGEMENT
+      // ==========================================
+      let products = [];
+      let selectedWeights = {}; // productId -> weightKey (e.g. "p100")
+      let cart = loadJSON("wff_cart", {}); // `${productId}__${weightKey}` -> { productId, name, image, weightKey, weightLabel, price, qty }
+      let activeModalProductId = null;
+      let toastTimer = null;
+      let announcementTimer = null;
+
+      // ==========================================
+      // 3. UTILITIES
+      // ==========================================
+      function loadJSON(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function saveJSON(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch { /* ignore storage quota errors */ }
+      }
+
+      function showToast(message, type = "default") {
+        const el = document.getElementById("toast");
+        el.textContent = message;
+        el.className = "toast show" + (type !== "default" ? " " + type : "");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          el.classList.remove("show");
+        }, 2800);
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? "")
+          .replace(/&/g, "&")
+          .replace(/</g, "<")
+          .replace(/>/g, ">")
+          .replace(/"/g, """)
+          .replace(/'/g, "'");
+      }
+
+      function makeFallbackImage(name) {
+        const lower = (name || "").toLowerCase();
+        let bg1 = "#2e7d32", bg2 = "#1b5e20", emoji = "🌿";
+        if (lower.includes("coffee")) { bg1 = "#5d4037"; bg2 = "#3e2723"; emoji = "☕"; }
+        else if (lower.includes("black pepper")) { bg1 = "#37474f"; bg2 = "#1c241d"; emoji = "⚫"; }
+        else if (lower.includes("green pepper")) { bg1 = "#2e7d32"; bg2 = "#1b5e20"; emoji = "🟢"; }
+        else if (lower.includes("turmeric") || lower.includes("manjal")) { bg1 = "#f57f17"; bg2 = "#d35400"; emoji = "✨"; }
+        else if (lower.includes("ginger") || lower.includes("chukku") || lower.includes("inchi")) { bg1 = "#a1887f"; bg2 = "#6d4c41"; emoji = "🫚"; }
+        else if (lower.includes("kudampuli") || lower.includes("tamarind")) { bg1 = "#4e342e"; bg2 = "#261612"; emoji = "🍂"; }
+
+        const shortLabel = (name || "Farm Fresh").slice(0, 22).replace(/&/g, "and");
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs>
+          <rect width="400" height="400" fill="url(#g)"/>
+          <circle cx="200" cy="170" r="68" fill="rgba(255,255,255,0.14)"/>
+          <text x="200" y="192" font-size="64" text-anchor="middle">${emoji}</text>
+          <text x="200" y="285" font-family="sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">${shortLabel}</text>
+          <text x="200" y="316" font-family="sans-serif" font-size="14" fill="rgba(255,255,255,0.78)" text-anchor="middle">Wayanad Farm Fresh</text>
+        </svg>`;
+        return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+      }
+
+      function normalizeRow(rawRow) {
+        const cleaned = {};
+        Object.keys(rawRow || {}).forEach((k) => {
+          const cleanKey = String(k).trim().toLowerCase();
+          cleaned[cleanKey] = typeof rawRow[k] === "string" ? rawRow[k].trim() : rawRow[k];
+        });
+        return cleaned;
+      }
+
+      function parsePrice(val) {
+        if (val === undefined || val === null || val === "") return null;
+        const num = parseFloat(String(val).replace(/[^\d.]/g, ""));
+        return Number.isFinite(num) && num > 0 ? num : null;
+      }
+
+      function isOutOfStock(stockVal) {
+        const s = String(stockVal ?? "").trim().toLowerCase();
+        return s === "out" || s === "out of stock" || s === "no" || s === "0";
+      }
+
+      function buildProductObjects(rows) {
+        const announcements = [];
+        const list = [];
+
+        rows.forEach((raw, idx) => {
+          const row = normalizeRow(raw);
+          const name = String(row.name || "").trim();
+          if (!name) return;
+
+          if (name.toUpperCase() === "ANNOUNCEMENT") {
+            const desc = String(row.description || "").trim();
+            if (desc) {
+              desc.split("|").map((s) => s.trim()).filter(Boolean).forEach((msg) => announcements.push(msg));
+            }
+            return;
+          }
+
+          const tiers = [];
+          WEIGHT_TIERS.forEach((t) => {
+            const price = parsePrice(row[t.key]);
+            if (price !== null) {
+              tiers.push({ key: t.key, label: t.label, price });
+            }
+          });
+
+          if (tiers.length ===

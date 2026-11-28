@@ -2471,9 +2471,6 @@ ${lines}
       // 12. EVENT LISTENERS
       // ==========================================
       function bindEvents() {
-        // Admin Sheet placeholder links
-        document.getElementById("adminProductsSheetLink").href = CONFIG.productsEditSheetUrl;
-        document.getElementById("adminResponsesSheetLink").href = CONFIG.responsesEditSheetUrl;
 
         // Tab buttons (Desktop & Mobile)
         document.querySelectorAll("[data-tab]").forEach((btn) => {
@@ -2512,9 +2509,6 @@ ${lines}
           renderProducts("");
           searchInput.focus();
         });
-
-        // Back to Store from Admin
-        document.getElementById("backToStoreBtn").addEventListener("click", () => switchTab("products"));
 
         // Product Grid Delegation (Card click, +/- buttons, size dropdown)
         const grid = document.getElementById("productsGrid");

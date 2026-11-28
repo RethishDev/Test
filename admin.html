@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Admin — Wayanad Farm Fresh</title>
+  <meta name="theme-color" content="#1b5e20" />
+  <style>
+    :root {
+      --primary: #1b5e20;
+      --primary-dark: #124116;
+      --primary-light: #e8f5e9;
+      --accent: #d35400;
+      --bg: #f5f7f5;
+      --surface: #ffffff;
+      --text: #1c241d;
+      --muted: #5c6b5e;
+      --border: #dfe6e0;
+      --danger: #c62828;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* PIN Lock Screen */
+    .lock-screen {
+      position: fixed; inset: 0; background: var(--primary);
+      display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200;
+    }
+    .lock-card {
+      background: #fff; padding: 28px 22px; border-radius: 18px; width: 100%; max-width: 340px;
+      text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+    }
+    .lock-card h2 { margin: 0 0 6px; color: var(--primary-dark); }
+    .lock-card p { margin: 0 0 18px; font-size: 0.85rem; color: var(--muted); }
+
+    /* Header & Tabs */
+    .topbar {
+      position: sticky; top: 0; z-index: 40;
+      background: var(--primary); color: #fff;
+      padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.14);
+    }
+    .topbar h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+    .topbar-actions { display: flex; gap: 8px; }
+    .btn-top {
+      background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+      padding: 7px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      text-decoration: none;
+    }
+
+    .tabs {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      background: #fff; border-bottom: 1px solid var(--border);
+      position: sticky; top: 53px; z-index: 35;
+    }
+    .tab-btn {
+      padding: 12px 6px; border: none; border-bottom: 3px solid transparent;
+      background: transparent; color: var(--muted); font-weight: 700; font-size: 0.84rem; cursor: pointer;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #f8fbf8; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 14px 12px 80px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* KPI Stats Grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    @media (min-width: 700px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+    .kpi-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .kpi-label { font-size: 0.76rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .kpi-value { font-size: 1.45rem; font-weight: 800; color: var(--primary-dark); margin-top: 4px; }
+    .kpi-sub { font-size: 0.74rem; color: var(--accent); font-weight: 600; margin-top: 2px; }
+
+    /* Card & Bars */
+    .panel {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 14px;
+    }
+    .panel h3 { margin: 0 0 12px; font-size: 1rem; color: var(--primary-dark); }
+    .bar-row { margin-bottom: 10px; }
+    .bar-head { display: flex; justify-content: space-between; font-size: 0.83rem; font-weight: 600; margin-bottom: 4px; }
+    .bar-track { height: 8px; background: #e8eee9; border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--primary); border-radius: 99px; }
+
+    /* Filters & Inputs */
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .input {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #fff;
+    }
+    .input:focus { outline: none; border-color: var(--primary); }
+    .toolbar .input { flex: 1; min-width: 160px; }
+
+    .btn {
+      padding: 10px 14px; border: none; border-radius: 10px; font-weight: 700; font-size: 0.86rem;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-danger { background: #ffebee; color: var(--danger); }
+    .btn-sm { padding: 6px 10px; font-size: 0.78rem; border-radius: 8px; }
+
+    /* Order Cards */
+    .order-card {
+      background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--primary);
+      border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
+    }
+    .order-card.status-Pending { border-left-color: #f57c00; }
+    .order-card.status-Delivered { border-left-color: #2e7d32; }
+    .order-card.status-Cancelled { border-left-color: var(--danger); opacity: 0.75; }
+
+    .order-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .order-meta { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .order-pre {
+      margin: 0 0 10px; white-space: pre-wrap; font-family: inherit; font-size: 0.85rem;
+      background: #f8faf8; padding: 10px; border-radius: 8px; border: 1px solid #edf2ee;
+    }
+    .order-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    /* Product Management List */
+    .prod-row {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between;
+      align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .prod-info { flex: 1; min-width: 200px; }
+    .prod-info h4 { margin: 0 0 4px; font-size: 0.95rem; }
+    .prod-prices { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .prod-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .badge-in { background: var(--primary-light); color: var(--primary); padding: 4px 9px; border-radius: 99px; font-size: 0.74rem; font-weight: 700; }
+    .badge-out { background: #ffebee; color: var(--danger); padding: 4px 9px; border-radius: 99px; font-size: 0.74rem; font-weight: 700; }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 150;
+      display: none; align-items: center; justify-content: center; padding: 14px;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: #fff; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+      border-radius: 16px; padding: 18px;
+    }
+    .modal-box h3 { margin: 0 0 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: var(--muted); }
+
+    /* Toast */
+    .toast {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      background: #1c241d; color: #fff; padding: 10px 18px; border-radius: 99px;
+      font-size: 0.85rem; font-weight: 600; z-index: 300; transition: 0.25s; opacity: 0;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <!-- PIN Lock -->
+  <div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+      <h2>🌿 Admin Login</h2>
+      <p>Wayanad Farm Fresh Control Center</p>
+      <form id="pinForm">
+        <input type="password" id="pinInput" class="input" placeholder="Enter Admin PIN" inputmode="numeric" style="text-align:center; font-size:1.1rem; margin-bottom:12px;" required />
+        <button type="submit" class="btn btn-primary" style="width:100%;">Unlock Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="topbar">
+    <h1>🌿 Wayanad Admin</h1>
+    <div class="topbar-actions">
+      <button type="button" class="btn-top" id="refreshBtn">↻ Sync</button>
+      <a href="index.html" class="btn-top">Store &rarr;</a>
+    </div>
+  </header>
+
+  <!-- 3 Tabs -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="stats">Statistics</button>
+    <button class="tab-btn" data-tab="orders">Orders (<span id="orderCountTab">0</span>)</button>
+    <button class="tab-btn" data-tab="products">Products</button>
+  </nav>
+
+  <main class="container">
+    <!-- 1. STATISTICS VIEW -->
+    <section id="view-stats" class="view active">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value" id="kpiRevenue">₹0</div>
+          <div class="kpi-sub">Excl. cancelled</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Total Orders</div>
+          <div class="kpi-value" id="kpiOrders">0</div>
+          <div class="kpi-sub" id="kpiPending">0 pending</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Today's Sales</div>
+          <div class="kpi-value" id="kpiToday">₹0</div>
+          <div class="kpi-sub" id="kpiTodayCount">0 orders today</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Order Value</div>
+          <div class="kpi-value" id="kpiAov">₹0</div>
+          <div class="kpi-sub">Per valid order</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Top Selling Products</h3>
+        <div id="topProductsChart">Loading...</div>
+      </div>
+
+      <div class="panel">
+        <h3>Order Status Breakdown</h3>
+        <div id="statusChart">Loading...</div>
+      </div>
+    </section>
+
+    <!-- 2. ORDERS MANAGEMENT VIEW -->
+    <section id="view-orders" class="view">
+      <div class="toolbar">
+        <input type="search" id="orderSearch" class="input" placeholder="Search name, phone, item..." />
+        <select id="orderStatusFilter" class="input" style="max-width:150px;">
+          <option value="ALL">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Packed">Packed</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div id="ordersList"></div>
+    </section>
+
+    <!-- 3. PRODUCTS & ANNOUNCEMENTS VIEW -->
+    <section id="view-products" class="view">
+      <div class="panel">
+        <h3>📢 Live Store Announcement Banner</h3>
+        <div class="toolbar" style="margin-bottom:0;">
+          <input type="text" id="announcementInput" class="input" placeholder="Use | to separate multiple announcements..." />
+          <button type="button" id="saveAnnouncementBtn" class="btn btn-accent">Save Banner</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="productSearch" class="input" placeholder="Filter products..." />
+        <button type="button" id="addProductBtn" class="btn btn-primary">+ Add Product</button>
+      </div>
+
+      <div id="productsList"></div>
+    </section>
+  </main>
+
+  <!-- Product Add/Edit Modal -->
+  <div id="productModal" class="modal-bg">
+    <div class="modal-box">
+      <h3 id="prodModalTitle">Add Product</h3>
+      <form id="productForm">
+        <input type="hidden" id="pRowNumber" />
+        <div class="field">
+          <label>Product Name *</label>
+          <input type="text" id="pName" class="input" required />
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="pDesc" class="input" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label>Image URL</label>
+          <input type="url" id="pImage" class="input" placeholder="https://..." />
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>100g Price (₹)</label><input type="number" id="p100" class="input" placeholder="Leave blank to skip" /></div>
+          <div class="field"><label>250g Price (₹)</label><input type="number" id="p250" class="input" /></div>
+          <div class="field"><label>500g Price (₹)</label><input type="number" id="p500" class="input" /></div>
+          <div class="field"><label>1kg Price (₹)</label><input type="number" id="p1000" class="input" /></div>
+        </div>
+        <div class="field">
+          <label>Stock Status</label>
+          <select id="pStock" class="input">
+            <option value="in">In Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn btn-outline" id="closeProdModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save to Sheet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Edit Modal -->
+  <div id="orderModal" class="modal-bg">
+    <div class="modal-box">
+      <h3>Edit Order</h3>
+      <form id="orderEditForm">
+        <input type="hidden" id="oRowNumber" />
+        <div class="field">
+          <label>Status</label>
+          <select id="oStatus" class="input">
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Packed">Packed</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Order Details</label>
+          <textarea id="oRawText" class="input" rows="8"></textarea>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn btn-outline" id="closeOrderModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Sheet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE
+      const APPS_SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+
+      let adminPin = sessionStorage.getItem("wff_admin_pin") || "";
+      let allProducts = [];
+      let allOrders = [];
+      let announcementRow = null;
+
+      function toast(msg) {
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        setTimeout(() => el.classList.remove("show"), 2600);
+      }
+
+      async function apiCall(payload) {
+        if (APPS_SCRIPT_URL.includes("PASTE_YOUR")) {
+          toast("Set APPS_SCRIPT_URL in admin.html first");
+          throw new Error("Missing URL");
+        }
+        // text/plain avoids CORS preflight issues with Google Apps Script
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ ...payload, pin: adminPin })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Request failed");
+        return data;
+      }
+
+      async function syncAll() {
+        toast("Syncing with Google Sheets...");
+        try {
+          const data = await apiCall({ action: "getDashboard" });
+          document.getElementById("lockScreen").style.display = "none";
+          sessionStorage.setItem("wff_admin_pin", adminPin);
+
+          const rawProds = data.products || [];
+          announcementRow = rawProds.find(p => String(p.name || "").trim().toUpperCase() === "ANNOUNCEMENT") || null;
+          allProducts = rawProds.filter(p => String(p.name || "").trim().toUpperCase() !== "ANNOUNCEMENT");
+          allOrders = data.orders || [];
+
+          document.getElementById("announcementInput").value = announcementRow ? (announcementRow.description || "") : "";
+          document.getElementById("orderCountTab").textContent = allOrders.length;
+
+          renderStats();
+          renderOrders();
+          renderProducts();
+          toast("Synced!");
+        } catch (err) {
+          toast(err.message);
+          if (err.message.toLowerCase().includes("pin")) {
+            sessionStorage.removeItem("wff_admin_pin");
+            document.getElementById("lockScreen").style.display = "flex";
+          }
+        }
+      }
+
+      // ---- PARSE ORDER HELPERS ----
+      function parseOrderTotal(text) {
+        const m = String(text).match(/Total Amount:\*?\s*₹?\s*(\d+(?:\.\d+)?)/i) || String(text).match(/₹\s*(\d+)/g);
+        if (!m) return 0;
+        if (Array.isArray(m) && m[1]) return parseFloat(m[1]) || 0;
+        const last = m[m.length - 1];
+        return parseFloat(String(last).replace(/[^\d.]/g, "")) || 0;
+      }
+
+      function parseOrderPhone(text) {
+        const m = String(text).match(/Phone:\*?\s*(\d{10})/i) || String(text).match(/\b(\d{10})\b/);
+        return m ? m[1] : "";
+      }
+
+      // ---- 1. RENDER STATISTICS ----
+      function renderStats() {
+        let revenue = 0, validCount = 0, pendingCount = 0, todayRev = 0, todayCount = 0;
+        const todayStr = new Date().toDateString();
+        const productSales = {};
+        const statusCounts = { Pending: 0, Confirmed: 0, Packed: 0, Delivered: 0, Cancelled: 0 };
+
+        allOrders.forEach(o => {
+          const st = o.status || "Pending";
+          statusCounts[st] = (statusCounts[st] || 0) + 1;
+          if (st === "Pending") pendingCount++;
+
+          const amt = parseOrderTotal(o.rawText);
+          if (st !== "Cancelled") {
+            revenue += amt;
+            validCount++;
+            if (o.timestamp && new Date(o.timestamp).toDateString() === todayStr) {
+              todayRev += amt;
+              todayCount++;
+            }
+            // Extract line items like "1. Black Pepper (250g) x 2 = ₹460"
+            const lines = String(o.rawText).split("\n");
+            lines.forEach(line => {
+              const itemMatch = line.match(/^\d+\.\s*(.+?)\s*\([^)]+\)\s*x\s*(\d+)/i);
+              if (itemMatch) {
+                const pName = itemMatch[1].trim();
+                const qty = parseInt(itemMatch[2], 10) || 1;
+                productSales[pName] = (productSales[pName] || 0) + qty;
+              }
+            });
+          }
+        });
+
+        document.getElementById("kpiRevenue").textContent = "₹" + Math.round(revenue).toLocaleString("en-IN");
+        document.getElementById("kpiOrders").textContent = allOrders.length;
+        document.getElementById("kpiPending").textContent = `${pendingCount} pending`;
+        document.getElementById("kpiToday").textContent = "₹" + Math.round(todayRev).toLocaleString("en-IN");
+        document.getElementById("kpiTodayCount").textContent = `${todayCount} orders today`;
+        document.getElementById("kpiAov").textContent = "₹" + (validCount ? Math.round(revenue / validCount) : 0);
+
+        // Top Products Bar Chart
+        const sortedProds = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 6);
+        const maxProd = sortedProds[0] ? sortedProds[0][1] : 1;
+        document.getElementById("topProductsChart").innerHTML = sortedProds.length
+          ? sortedProds.map(([name, qty]) => `
+              <div class="bar-row">
+                <div class="bar-head"><span>${name}</span><span>${qty} packs</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width:${(qty / maxProd) * 100}%"></div></div>
+              </div>`).join("")
+          : `<p style="color:var(--muted);font-size:0.85rem;">No product sales data yet.</p>`;
+
+      // Status Breakdown
+        const total = allOrders.length || 1;
+        document.getElementById("statusChart").innerHTML = Object.entries(statusCounts).map(([st, cnt]) => `
+          <div class="bar-row">
+            <div class="bar-head"><span>${st}</span><span>${cnt}</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(cnt / total) * 100}%; background:${st === 'Cancelled' ? '#c62828' : st === 'Pending' ? '#f57c00' : '#1b5e20'}"></div></div>
+          </div>`).join("");
+      }
+
+      // ---- 2. RENDER ORDERS ----
+      function renderOrders() {
+        const q = document.getElementById("orderSearch").value.trim().toLowerCase();
+        const stFilter = document.getElementById("orderStatusFilter").value;
+
+        const filtered = allOrders.filter(o => {
+          if (stFilter !== "ALL" && o.status !== stFilter) return false;
+          if (q && !o.rawText.toLowerCase().includes(q)) return false;
+          return true;
+        });
+
+        const list = document.getElementById("ordersList");
+        if (!filtered.length) {
+          list.innerHTML = `<div class="panel" style="text-align:center;color:var(--muted);">No matching orders.</div>`;
+          return;
+        }
+
+        list.innerHTML = filtered.map(o => {
+          const dateLabel = o.timestamp ? new Date(o.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "Row " + o.rowNumber;
+          const phone = parseOrderPhone(o.rawText);
+          return `
+            <div class="order-card status-${o.status}">
+              <div class="order-top">
+                <span class="order-meta">Row #${o.rowNumber} • ${dateLabel}</span>
+                <select class="input" style="width:auto;padding:5px 8px;font-size:0.8rem;font-weight:700;" data-status-row="${o.rowNumber}">
+                  ${["Pending","Confirmed","Packed","Delivered","Cancelled"].map(s => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
+                </select>
+              </div>
+              <pre class="order-pre">${o.rawText.replace(/</g, "&lt;")}</pre>
+              <div class="order-actions">
+                ${phone ? `<a class="btn btn-primary btn-sm" style="text-decoration:none;" target="_blank" href="https://wa.me/91${phone}">WhatsApp</a>` : ""}
+                <button type="button" class="btn btn-outline btn-sm" data-edit-order="${o.rowNumber}">Edit</button>
+                <button type="button" class="btn btn-danger btn-sm" data-del-order="${o.rowNumber}">Delete</button>
+              </div>
+            </div>`;
+        }).join("");
+      }
+
+      // ---- 3. RENDER PRODUCTS ----
+      function renderProducts() {
+        const q = document.getElementById("productSearch").value.trim().toLowerCase();
+        const filtered = allProducts.filter(p => String(p.name || "").toLowerCase().includes(q));
+        const list = document.getElementById("productsList");
+
+        list.innerHTML = filtered.map(p => {
+          const out = ["out", "out of stock", "no", "0"].includes(String(p.stock || "").trim().toLowerCase());
+          const prices = [
+            p.p100 ? `100g: ₹${p.p100}` : "",
+            p.p250 ? `250g: ₹${p.p250}` : "",
+            p.p500 ? `500g: ₹${p.p500}` : "",
+            p.p1000 ? `1kg: ₹${p.p1000}` : ""
+          ].filter(Boolean).join(" • ");
+
+          return `
+            <div class="prod-row">
+              <div class="prod-info">
+                <h4>${p.name} <span class="${out ? "badge-out" : "badge-in"}">${out ? "Out of Stock" : "In Stock"}</span></h4>
+                <div class="prod-prices">${prices || "No prices set"}</div>
+              </div>
+              <div class="prod-actions">
+                <button type="button" class="btn btn-outline btn-sm" data-toggle-stock="${p.rowNumber}" data-next-stock="${out ? "in" : "out"}">${out ? "Mark In Stock" : "Mark Out"}</button>
+                <button type="button" class="btn btn-primary btn-sm" data-edit-prod="${p.rowNumber}">Edit</button>
+                <button type="button" class="btn btn-danger btn-sm" data-del-prod="${p.rowNumber}">Delete</button>
+              </div>
+            </div>`;
+        }).join("");
+      }
+
+      // ---- EVENTS ----
+      document.getElementById("pinForm").addEventListener("submit", e => {
+        e.preventDefault();
+        adminPin = document.getElementById("pinInput").value.trim();
+        syncAll();
+      });
+
+      document.getElementById("refreshBtn").addEventListener("click", syncAll);
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById("view-" + btn.dataset.tab).classList.add("active");
+        });
+      });
+
+      document.getElementById("orderSearch").addEventListener("input", renderOrders);
+      document.getElementById("orderStatusFilter").addEventListener("change", renderOrders);
+      document.getElementById("productSearch").addEventListener("input", renderProducts);
+
+      // Order Actions
+      document.getElementById("ordersList").addEventListener("change", async e => {
+        const sel = e.target.closest("[data-status-row]");
+        if (!sel) return;
+        const rowNumber = Number(sel.dataset.statusRow);
+        try {
+          await apiCall({ action: "updateOrder", order: { rowNumber, status: sel.value } });
+          toast("Order status updated!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+
+      document.getElementById("ordersList").addEventListener("click", async e => {
+        const editBtn = e.target.closest("[data-edit-order]");
+        if (editBtn) {
+          const ord = allOrders.find(o => o.rowNumber === Number(editBtn.dataset.editOrder));
+          if (!ord) return;
+          document.getElementById("oRowNumber").value = ord.rowNumber;
+          document.getElementById("oStatus").value = ord.status;
+          document.getElementById("oRawText").value = ord.rawText;
+          document.getElementById("orderModal").classList.add("open");
+          return;
+        }
+        const delBtn = e.target.closest("[data-del-order]");
+        if (delBtn && confirm("Delete this order from Google Sheets permanently?")) {
+          try {
+            await apiCall({ action: "deleteOrder", rowNumber: Number(delBtn.dataset.delOrder) });
+            toast("Order deleted");
+            syncAll();
+          } catch (err) { toast(err.message); }
+        }
+      });
+
+      document.getElementById("orderEditForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        try {
+          await apiCall({
+            action: "updateOrder",
+            order: {
+              rowNumber: Number(document.getElementById("oRowNumber").value),
+              status: document.getElementById("oStatus").value,
+              rawText: document.getElementById("oRawText").value
+            }
+          });
+          document.getElementById("orderModal").classList.remove("open");
+          toast("Order saved to Sheet!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+      document.getElementById("closeOrderModal").onclick = () => document.getElementById("orderModal").classList.remove("open");
+
+      // Product & Announcement Actions
+      document.getElementById("saveAnnouncementBtn").addEventListener("click", async () => {
+        const desc = document.getElementById("announcementInput").value.trim();
+        try {
+          await apiCall({
+            action: "saveProduct",
+            product: {
+              rowNumber: announcementRow ? announcementRow.rowNumber : null,
+              name: "ANNOUNCEMENT",
+              description: desc,
+              image: "", p100: "", p250: "", p500: "", p1000: "", stock: "in"
+            }
+          });
+          toast("Announcement updated!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+
+      document.getElementById("addProductBtn").addEventListener("click", () => {
+        document.getElementById("prodModalTitle").textContent = "Add New Product";
+        document.getElementById("productForm").reset();
+        document.getElementById("pRowNumber").value = "";
+        document.getElementById("productModal").classList.add("open");
+      });
+
+      document.getElementById("productsList").addEventListener("click", async e => {
+        const toggleBtn = e.target.closest("[data-toggle-stock]");
+        if (toggleBtn) {
+          try {
+            await apiCall({
+              action: "toggleStock",
+              rowNumber: Number(toggleBtn.dataset.toggleStock),
+              stock: toggleBtn.dataset.nextStock
+            });
+            toast("Stock updated!");
+            syncAll();
+          } catch (err) { toast(err.message); }
+          return;
+        }
+        const editBtn = e.target.closest("[data-edit-prod]");
+        if (editBtn) {
+          const p = allProducts.find(x => x.rowNumber === Number(editBtn.dataset.editProd));
+          if (!p) return;
+          document.getElementById("prodModalTitle").textContent = "Edit Product";
+          document.getElementById("pRowNumber").value = p.rowNumber;
+          document.getElementById("pName").value = p.name || "";
+          document.getElementById("pDesc").value = p.description || "";
+          document.getElementById("pImage").value = p.image || "";
+          document.getElementById("p100").value = p.p100 || "";
+          document.getElementById("p250").value = p.p250 || "";
+          document.getElementById("p500").value = p.p500 || "";
+          document.getElementById("p1000").value = p.p1000 || "";
+          const out = ["out", "out of stock", "no", "0"].includes(String(p.stock || "").trim().toLowerCase());
+          document.getElementById("pStock").value = out ? "out" : "in";
+          document.getElementById("productModal").classList.add("open");
+          return;
+        }
+        const delBtn = e.target.closest("[data-del-prod]");
+        if (delBtn && confirm("Delete this product from Google Sheets?")) {
+          try {
+            await apiCall({ action: "deleteProduct", rowNumber: Number(delBtn.dataset.delProd) });
+            toast("Product deleted");
+            syncAll();
+          } catch (err) { toast(err.message); }
+        }
+      });
+
+      document.getElementById("productForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        try {
+          await apiCall({
+            action: "saveProduct",
+            product: {
+              rowNumber: document.getElementById("pRowNumber").value || null,
+              name: document.getElementById("pName").value.trim(),
+              description: document.getElementById("pDesc").value.trim(),
+              image: document.getElementById("pImage").value.trim(),
+              p100: document.getElementById("p100").value,
+              p250: document.getElementById("p250").value,
+              p500: document.getElementById("p500").value,
+              p1000: document.getElementById("p1000").value,
+              stock: document.getElementById("pStock").value
+            }
+          });
+          document.getElementById("productModal").classList.remove("open");
+          toast("Product saved to Sheet!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+      document.getElementById("closeProdModal").onclick = () => document.getElementById("productModal").classList.remove("open");
+
+      // Auto-login if PIN already saved in session
+      if (adminPin) syncAll();
+    })();
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Wayanad Farm Fresh — Pure Spices & Coffee Farmed in Wayanad</title>
+  <title>Wayanad Farm Fresh — Pure Spices &amp; Coffee Farmed in Wayanad</title>
   <meta name="description" content="Pure Spices & Coffee Farmed in Wayanad. Order farm-fresh pepper, coffee, ginger, turmeric, and kudampuli directly via WhatsApp." />
   <meta name="theme-color" content="#1b5e20" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -220,7 +220,7 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
-    /* Mobile Header & Tabs */
+    /* Mobile Header & Tabs (Hidden on Desktop) */
     .mobile-header {
       display: none;
     }
@@ -862,6 +862,92 @@
       line-height: 1.5;
     }
 
+    /* Secret Admin Home Screen */
+    .admin-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--primary-dark);
+      color: #ffffff;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+    }
+
+    .admin-header-bar h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .admin-header-bar p {
+      margin: 2px 0 0;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-back-store {
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .admin-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .admin-card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .admin-card h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+
+    .admin-card p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
     /* Floating Cart Button */
     .floating-cart-btn {
       position: fixed;
@@ -1240,11 +1326,13 @@
         padding: 12px 12px 92px;
       }
 
+      /* Strictly equal-width 2-column mobile grid */
       .products-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
       }
 
+      /* Bottom-sheet modal on mobile */
       .modal-backdrop {
         align-items: flex-end;
         padding: 0;
@@ -1283,7 +1371,7 @@
         </svg>
         <div class="brand-info">
           <h1>Wayanad Farm Fresh</h1>
-          <p>Pure Spices & Coffee Farmed in Wayanad</p>
+          <p>Pure Spices &amp; Coffee Farmed in Wayanad</p>
         </div>
       </div>
 
@@ -1332,7 +1420,7 @@
         </svg>
         <div style="min-width:0;">
           <h1>Wayanad Farm Fresh</h1>
-          <p>Pure Spices & Coffee Farmed in Wayanad</p>
+          <p>Pure Spices &amp; Coffee Farmed in Wayanad</p>
         </div>
       </div>
       <button class="mobile-share-btn" id="mobileShareBtn" aria-label="Share Store">
@@ -1373,7 +1461,7 @@
               placeholder="Search pepper, kappi, chukku, manjal, kudampuli..."
               autocomplete="off"
             />
-            <button type="button" id="searchClear" class="search-clear" aria-label="Clear search">×</button>
+            <button type="button" id="searchClear" class="search-clear" aria-label="Clear search">&times;</button>
           </div>
 
           <div id="productsGrid" class="products-grid"></div>
@@ -1409,6 +1497,45 @@
           </div>
           <div id="ordersList" class="orders-list"></div>
         </section>
+
+        <!-- SECRET ADMIN HOME SCREEN -->
+        <section id="view-admin" class="view-section">
+          <div class="admin-header-bar">
+            <div>
+              <h2>Admin Control Center</h2>
+              <p>Wayanad Farm Fresh — Store Management</p>
+            </div>
+            <button type="button" id="backToStoreBtn" class="btn-back-store">&larr; Back to Store</button>
+          </div>
+
+          <div class="admin-grid">
+            <a href="history.html" class="admin-card">
+              <div class="admin-card-icon">📋</div>
+              <h3>Order History</h3>
+              <p>Browse, filter, and inspect all customer orders.</p>
+            </a>
+            <a href="editor.html" class="admin-card">
+              <div class="admin-card-icon">✏️</div>
+              <h3>Apps Script Order Editor</h3>
+              <p>Update order statuses and edit customer entries.</p>
+            </a>
+            <a href="admin.html" class="admin-card">
+              <div class="admin-card-icon">🧮</div>
+              <h3>Settlement Calculator</h3>
+              <p>Calculate farm payouts, margins, and daily totals.</p>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener" id="adminProductsSheetLink" class="admin-card">
+              <div class="admin-card-icon">📊</div>
+              <h3>Open Products Sheet</h3>
+              <p>Edit prices, stock toggles, and live announcements.</p>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener" id="adminResponsesSheetLink" class="admin-card">
+              <div class="admin-card-icon">📑</div>
+              <h3>Open Responses Sheet</h3>
+              <p>View raw Google Form order submissions in Sheets.</p>
+            </a>
+          </div>
+        </section>
       </div>
     </main>
   </div>
@@ -1422,7 +1549,7 @@
   <!-- Product Details Bottom-Sheet Modal -->
   <div id="productModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
     <div class="modal-sheet">
-      <button type="button" class="modal-close-btn" id="closeProductModal" aria-label="Close">×</button>
+      <button type="button" class="modal-close-btn" id="closeProductModal" aria-label="Close">&times;</button>
       <img id="modalProductImg" class="modal-product-img" src="" alt="" />
       <div class="modal-body">
         <h3 id="modalProductTitle" class="modal-title"></h3>
@@ -1442,7 +1569,7 @@
   <!-- Checkout Modal -->
   <div id="checkoutModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
     <div class="modal-sheet">
-      <button type="button" class="modal-close-btn" id="closeCheckoutModal" aria-label="Close">×</button>
+      <button type="button" class="modal-close-btn" id="closeCheckoutModal" aria-label="Close">&times;</button>
       <div class="modal-body">
         <h3 id="checkoutModalTitle" class="modal-title" style="margin-bottom:14px;">Delivery Details</h3>
         <div id="checkoutMiniSummary" class="checkout-mini-summary"></div>
@@ -1456,7 +1583,7 @@
             <input type="tel" id="custPhone" class="input-field" placeholder="e.g. 9876543210" inputmode="numeric" maxlength="10" required />
           </div>
           <div class="form-group">
-            <label for="custAddress" class="form-label">Delivery Address & Pincode *</label>
+            <label for="custAddress" class="form-label">Delivery Address &amp; Pincode *</label>
             <textarea id="custAddress" class="input-field" placeholder="House name, street, landmark, city, pincode" required></textarea>
           </div>
           <button type="submit" id="submitOrderBtn" class="btn-primary-full btn-green-full">
@@ -1479,7 +1606,10 @@
         productsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjR1C6Vp_ecdkKYF6cO2zRE3B8geHXb4SUFU57g-eOFUCRS6jRv-aE66NChKgnkEXCjKsz-sWePqF8/pub?gid=1756612013&single=true&output=csv",
         ordersCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRYN4GykKjslabTW2aDjHnDV0HjCEgjE_MlGG5yFJHu3ZAAXBjVey9-rlDN97gSlIF3LTjlBjPI7UZj/pub?gid=768478150&single=true&output=csv",
         formResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfhJsxMl1ItAVjD4xtmmtEZZbvGfu9Aazt_L9ml9BuiViQG7w/formResponse",
-        formEntryId: "entry.1571825356"
+        formEntryId: "entry.1571825356",
+        // Optional: replace with your direct editable Google Sheets URLs for the Admin Home Screen
+        productsEditSheetUrl: "https://docs.google.com/spreadsheets/",
+        responsesEditSheetUrl: "https://docs.google.com/spreadsheets/"
       };
 
       const WEIGHT_TIERS = [
@@ -1580,8 +1710,8 @@
       // 2. STATE MANAGEMENT
       // ==========================================
       let products = [];
-      let selectedWeights = {};
-      let cart = loadJSON("wff_cart", {});
+      let selectedWeights = {}; // productId -> weightKey (e.g. "p100")
+      let cart = loadJSON("wff_cart", {}); // `${productId}__${weightKey}` -> { productId, name, image, weightKey, weightLabel, price, qty }
       let activeModalProductId = null;
       let toastTimer = null;
       let announcementTimer = null;
@@ -1616,11 +1746,11 @@
 
       function escapeHtml(str) {
         return String(str ?? "")
-          .replace(/&/g, "&")
-          .replace(/</g, "<")
-          .replace(/>/g, ">")
-          .replace(/"/g, """)
-          .replace(/'/g, "'");
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
 
       function makeFallbackImage(name) {
@@ -1690,7 +1820,7 @@
             }
           });
 
-          if (tiers.length === 0) return;
+          if (tiers.length === 0) return; // Skip rows with no valid prices
 
           const id = "prod_" + idx + "_" + name.toLowerCase().replace(/[^a-z0-9]+/g, "_");
           const imgUrl = row.image && /^https?:\/\//i.test(row.image) ? row.image : makeFallbackImage(name);
@@ -1706,7 +1836,7 @@
           });
 
           if (!selectedWeights[id] || !tiers.some((t) => t.key === selectedWeights[id])) {
-            selectedWeights[id] = tiers[0].key;
+            selectedWeights[id] = tiers[0].key; // Default to smallest available weight
           }
         });
 
@@ -1745,7 +1875,7 @@
             charIndex++;
             textEl.textContent = graphemes.slice(0, charIndex).join("");
             if (charIndex >= graphemes.length) {
-              if (messages.length === 1) return;
+              if (messages.length === 1) return; // Stay visible if single announcement
               isDeleting = true;
               announcementTimer = setTimeout(tick, 2400);
               return;
@@ -1901,7 +2031,8 @@
         const floatingBadge = document.getElementById("floatingCartBadge");
         floatingBadge.textContent = count;
         const isCartActive = document.getElementById("view-cart").classList.contains("active");
-        floatingBtn.classList.toggle("visible", count > 0 && !isCartActive);
+        const isAdminActive = document.getElementById("view-admin").classList.contains("active");
+        floatingBtn.classList.toggle("visible", count > 0 && !isCartActive && !isAdminActive);
       }
 
       // ==========================================
@@ -1916,6 +2047,7 @@
 
         return words.every((word) => {
           if (haystack.includes(word)) return true;
+          // Check Malayalam/Manglish dictionary keys
           for (const [dictKey, synonyms] of Object.entries(SEARCH_SYNONYMS)) {
             if (dictKey.includes(word) || word.includes(dictKey)) {
               if (synonyms.some((syn) => haystack.includes(syn))) return true;
@@ -1949,7 +2081,7 @@
             ? ""
             : qty > 0
               ? `<div class="qty-pill" data-stop-card="true">
-                  <button type="button" data-action="dec" data-id="${product.id}" data-weight="${tier.key}" aria-label="Decrease quantity">−</button>
+                  <button type="button" data-action="dec" data-id="${product.id}" data-weight="${tier.key}" aria-label="Decrease quantity">&minus;</button>
                   <span>${qty}</span>
                   <button type="button" data-action="inc" data-id="${product.id}" data-weight="${tier.key}" aria-label="Increase quantity">+</button>
                 </div>`
@@ -2046,7 +2178,7 @@
         if (qty > 0) {
           container.innerHTML = `
             <div class="modal-qty-full">
-              <button type="button" id="modalDecBtn" aria-label="Decrease quantity">−</button>
+              <button type="button" id="modalDecBtn" aria-label="Decrease quantity">&minus;</button>
               <span>${qty} in Cart (${tier.label})</span>
               <button type="button" id="modalIncBtn" aria-label="Increase quantity">+</button>
             </div>
@@ -2084,7 +2216,7 @@
             <div class="empty-state">
               <span class="empty-state-icon">🛒</span>
               <h3>Your cart is empty</h3>
-              <p>Add farm-fresh Wayanad spices & coffee to get started.</p>
+              <p>Add farm-fresh Wayanad spices &amp; coffee to get started.</p>
               <button type="button" class="btn-outline" id="goShopBtn">Browse Products</button>
             </div>
           `;
@@ -2102,11 +2234,11 @@
             />
             <div class="cart-item-info">
               <h4 class="cart-item-title">${escapeHtml(item.name)}</h4>
-              <div class="cart-item-meta">${escapeHtml(item.weightLabel)} × ₹${item.price}</div>
+              <div class="cart-item-meta">${escapeHtml(item.weightLabel)} &times; ₹${item.price}</div>
               <div class="cart-item-price">₹${item.price * item.qty}</div>
             </div>
             <div class="qty-pill">
-              <button type="button" data-cart-dec="${item.productId}" data-cart-weight="${item.weightKey}" aria-label="Decrease">−</button>
+              <button type="button" data-cart-dec="${item.productId}" data-cart-weight="${item.weightKey}" aria-label="Decrease">&minus;</button>
               <span>${item.qty}</span>
               <button type="button" data-cart-inc="${item.productId}" data-cart-weight="${item.weightKey}" aria-label="Increase">+</button>
             </div>
@@ -2125,7 +2257,7 @@
               <span>₹${amount}</span>
             </div>
             <button type="button" id="openCheckoutBtn" class="btn-primary-full">
-              Proceed to Checkout →
+              Proceed to Checkout &rarr;
             </button>
           </div>
         `;
@@ -2183,9 +2315,11 @@
           return;
         }
 
+        // Save customer details for auto-fill
         saveJSON("wff_customer", { name, phone: phoneDigits, address });
         document.getElementById("orderPhoneInput").value = phoneDigits;
 
+        // Build formatted order message
         const lines = items.map((it, i) =>
           `${i + 1}. ${it.name} (${it.weightLabel}) x ${it.qty} = ₹${it.price * it.qty}`
         ).join("\n");
@@ -2202,7 +2336,7 @@ ${lines}
 ------------------------
 *Total Amount:* ₹${amount}`;
 
-        // Silent submission to Google Form (no-cors)
+        // 1. Silent submission to Google Form (no-cors)
         try {
           const formData = new URLSearchParams();
           formData.append(CONFIG.formEntryId, orderSummary);
@@ -2214,9 +2348,11 @@ ${lines}
           }).catch(() => {});
         } catch { /* ignore background form errors */ }
 
+        // 2. Open WhatsApp with pre-filled order message
         const waUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(orderSummary)}`;
         window.open(waUrl, "_blank", "noopener");
 
+        // Clear cart and close modal
         cart = {};
         saveJSON("wff_cart", cart);
         syncCartBadges();
@@ -2267,9 +2403,11 @@ ${lines}
             }
 
             const matched = [];
+            // Skip header row (index 0)
             for (let i = 1; i < rows.length; i++) {
               const row = rows[i];
               const joined = row.join(" ");
+              // Check if any 10+ digit sequence in the row ends with last10
               const phoneMatches = joined.match(/\d[\d\s\-+]{8,}\d/g) || [];
               const found = phoneMatches.some((m) => m.replace(/\D/g, "").slice(-10) === last10)
                 || joined.replace(/\D/g, "").includes(last10);
@@ -2286,6 +2424,7 @@ ${lines}
               return;
             }
 
+            // Show newest orders first
             matched.reverse();
             listEl.innerHTML = matched.map((ord) => `
               <article class="order-card">
@@ -2362,6 +2501,7 @@ ${lines}
           }
         }
 
+        // WhatsApp fallback
         const waShare = `https://wa.me/?text=${encodeURIComponent(shareData.text + " " + shareData.url)}`;
         window.open(waShare, "_blank", "noopener");
       }
@@ -2370,14 +2510,23 @@ ${lines}
       // 12. EVENT LISTENERS
       // ==========================================
       function bindEvents() {
+        // Admin Sheet placeholder links
+        document.getElementById("adminProductsSheetLink").href = CONFIG.productsEditSheetUrl;
+        document.getElementById("adminResponsesSheetLink").href = CONFIG.responsesEditSheetUrl;
+
+        // Tab buttons (Desktop & Mobile)
         document.querySelectorAll("[data-tab]").forEach((btn) => {
           btn.addEventListener("click", () => switchTab(btn.getAttribute("data-tab")));
         });
 
+        // Floating Cart button
         document.getElementById("floatingCartBtn").addEventListener("click", () => switchTab("cart"));
+
+        // Share buttons
         document.getElementById("mobileShareBtn").addEventListener("click", shareStore);
         document.getElementById("desktopShareBtn").addEventListener("click", shareStore);
 
+        // Search Bar + Secret Admin Trigger
         const searchInput = document.getElementById("searchInput");
         const searchClear = document.getElementById("searchClear");
 
@@ -2385,10 +2534,13 @@ ${lines}
           const val = e.target.value;
           searchClear.classList.toggle("visible", val.length > 0);
 
+          // Secret Admin Home Screen Trigger
           if (val.trim().toLowerCase() === "admin") {
             searchInput.value = "";
             searchClear.classList.remove("visible");
-            window.location.href = "admin.html";
+            renderProducts("");
+            switchTab("admin");
+            showToast("Admin Control Center opened", "success");
             return;
           }
 
@@ -2402,6 +2554,10 @@ ${lines}
           searchInput.focus();
         });
 
+        // Back to Store from Admin
+        document.getElementById("backToStoreBtn").addEventListener("click", () => switchTab("products"));
+
+        // Product Grid Delegation (Card click, +/- buttons, size dropdown)
         const grid = document.getElementById("productsGrid");
 
         grid.addEventListener("click", (e) => {
@@ -2435,6 +2591,7 @@ ${lines}
           }
         });
 
+        // Product Modal events
         document.getElementById("closeProductModal").addEventListener("click", closeProductModal);
         document.getElementById("productModalBackdrop").addEventListener("click", (e) => {
           if (e.target.id === "productModalBackdrop") closeProductModal();
@@ -2449,6 +2606,7 @@ ${lines}
           }
         });
 
+        // Cart Delegation
         document.getElementById("cartContainer").addEventListener("click", (e) => {
           const decBtn = e.target.closest("[data-cart-dec]");
           if (decBtn) {
@@ -2470,17 +2628,20 @@ ${lines}
           showToast("Cart cleared");
         });
 
+        // Checkout Modal events
         document.getElementById("closeCheckoutModal").addEventListener("click", closeCheckoutModal);
         document.getElementById("checkoutModalBackdrop").addEventListener("click", (e) => {
           if (e.target.id === "checkoutModalBackdrop") closeCheckoutModal();
         });
         document.getElementById("checkoutForm").addEventListener("submit", handleCheckoutSubmit);
 
+        // Orders Lookup Form
         document.getElementById("orderLookupForm").addEventListener("submit", (e) => {
           e.preventDefault();
           lookupOrders(document.getElementById("orderPhoneInput").value);
         });
 
+        // Escape key closes modals
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
             closeProductModal();

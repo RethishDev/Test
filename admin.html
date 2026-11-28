@@ -463,7 +463,7 @@
               </div>`).join("")
           : `<p style="color:var(--muted);font-size:0.85rem;">No product sales data yet.</p>`;
 
-      // Status Breakdown
+        // Status Breakdown
         const total = allOrders.length || 1;
         document.getElementById("statusChart").innerHTML = Object.entries(statusCounts).map(([st, cnt]) => `
           <div class="bar-row">

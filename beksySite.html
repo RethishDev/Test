@@ -3,2659 +3,709 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Wayanadan Spices — Pure Spices &amp; Coffee Farmed in Wayanad</title>
-  <meta name="description" content="Pure Spices & Coffee Farmed in Wayanad. Order farm-fresh pepper, coffee, ginger, turmeric, and kudampuli directly via WhatsApp." />
+  <title>Admin — Wayanad Farm Fresh</title>
   <meta name="theme-color" content="#1b5e20" />
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     :root {
       --primary: #1b5e20;
       --primary-dark: #124116;
       --primary-light: #e8f5e9;
       --accent: #d35400;
-      --accent-dark: #b34700;
-      --accent-light: #fff3e0;
       --bg: #f5f7f5;
       --surface: #ffffff;
       --text: #1c241d;
-      --text-muted: #5c6b5e;
+      --muted: #5c6b5e;
       --border: #dfe6e0;
       --danger: #c62828;
-      --shadow-sm: 0 2px 8px rgba(27, 94, 32, 0.06);
-      --shadow-md: 0 6px 20px rgba(27, 94, 32, 0.12);
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --sidebar-width: 270px;
+      --radius: 14px;
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
       margin: 0;
-      padding: 0;
-      width: 100%;
-      max-width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       overflow-x: hidden;
-      overflow-y: auto;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.45;
     }
 
-    /* Animated SVG Logo */
-    .logo-svg {
-      width: 46px;
-      height: 46px;
-      flex-shrink: 0;
-      display: block;
-    }
-
-    .logo-leaf-left {
-      transform-origin: 23px 28px;
-      animation: leafSwayLeft 3.4s ease-in-out infinite;
-    }
-
-    .logo-leaf-right {
-      transform-origin: 23px 28px;
-      animation: leafSwayRight 3.4s ease-in-out infinite;
-    }
-
-    .logo-bean {
-      transform-origin: 23px 26px;
-      animation: beanPulse 3.4s ease-in-out infinite;
-    }
-
-    @keyframes leafSwayLeft {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(-6deg); }
-    }
-
-    @keyframes leafSwayRight {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(6deg); }
-    }
-
-    @keyframes beanPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-    }
-
-    /* App Layout */
-    .app-shell {
-      display: flex;
-      min-height: 100vh;
-      width: 100%;
-      max-width: 100%;
-    }
-
-    /* Desktop Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: var(--sidebar-width);
-      background: var(--primary);
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      padding: 24px 18px;
-      z-index: 40;
-      box-shadow: 2px 0 16px rgba(0, 0, 0, 0.08);
-    }
-
-    .brand-block {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .brand-info h1 {
-      margin: 0;
-      font-size: 1.12rem;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-      color: #ffffff;
-    }
-
-    .brand-info p {
-      margin: 3px 0 0;
-      font-size: 0.74rem;
-      color: rgba(255, 255, 255, 0.85);
-      line-height: 1.25;
-    }
-
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1;
-    }
-
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      width: 100%;
-      padding: 12px 14px;
-      border: none;
-      border-radius: var(--radius-sm);
-      background: transparent;
-      color: rgba(255, 255, 255, 0.86);
-      font-size: 0.94rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease;
-      text-align: left;
-    }
-
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-    }
-
-    .nav-btn.active {
-      background: #ffffff;
-      color: var(--primary);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .nav-btn-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-badge {
-      background: var(--accent);
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      min-width: 22px;
-      height: 22px;
-      padding: 0 6px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .nav-badge.hidden {
-      display: none;
-    }
-
-    .sidebar-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.18);
-      padding-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .share-desktop-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      font-size: 0.86rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .share-desktop-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Mobile Header & Tabs (Hidden on Desktop) */
-    .mobile-header {
-      display: none;
-    }
-
-    .mobile-tabs {
-      display: none;
-    }
-
-    /* Main Content */
-    .main-content {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      min-width: 0;
-      padding: 20px 24px 96px;
-      width: calc(100% - var(--sidebar-width));
-    }
-
-    .container {
-      max-width: 1080px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    /* Announcement Banner */
-    .announcement-banner {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-      color: #ffffff;
-      padding: 11px 16px;
-      border-radius: var(--radius-md);
-      margin-bottom: 16px;
-      box-shadow: var(--shadow-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-      min-height: 44px;
-      border-left: 4px solid var(--accent);
-    }
-
-    .announcement-banner.visible {
-      display: flex;
-    }
-
-    .announcement-icon {
-      flex-shrink: 0;
-      font-size: 1rem;
-    }
-
-    .announcement-text-wrap {
-      flex: 1;
-      min-width: 0;
-      word-break: break-word;
-    }
-
-    .typewriter-cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1em;
-      background: #ffd54f;
-      margin-left: 2px;
-      vertical-align: -2px;
-      animation: blinkCursor 0.75s step-end infinite;
-    }
-
-    @keyframes blinkCursor {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    /* Search Bar */
-    .search-bar-wrap {
-      position: relative;
-      margin-bottom: 16px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 12px 42px 12px 42px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--surface);
-      font-size: 0.95rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .search-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.12);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-      display: flex;
-    }
-
-    .search-clear {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: none;
-      background: #edf2ee;
-      color: var(--text-muted);
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .search-clear.visible {
-      display: flex;
-    }
-
-    /* Section Views */
-    .view-section {
-      display: none;
-    }
-
-    .view-section.active {
-      display: block;
-    }
-
-    /* Product Grid */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      width: 100%;
-    }
-
-    .product-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: var(--shadow-sm);
-      cursor: pointer;
-      transition: transform 0.16s ease, box-shadow 0.16s ease;
-      position: relative;
-      min-width: 0;
-    }
-
-    .product-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .product-card.out-of-stock {
-      opacity: 0.85;
-    }
-
-    .product-img-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      background: #eef3ee;
-      overflow: hidden;
-    }
-
-    .product-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-
-    .product-card.out-of-stock .product-img {
-      filter: grayscale(100%) brightness(0.75);
-    }
-
-    .oos-badge {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.38);
-      pointer-events: none;
-    }
-
-    .oos-badge span {
-      background: var(--danger);
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      padding: 5px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    }
-
-    /* Zepto-Style Floating + / - qty + Control on Image */
-    .card-action-float {
-      position: absolute;
-      right: 8px;
-      bottom: 8px;
-      z-index: 5;
-    }
-
-    .btn-plus {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      border: 1.5px solid var(--primary);
-      background: #ffffff;
-      color: var(--primary);
-      font-size: 1.35rem;
-      font-weight: 700;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
-      transition: background 0.15s, color 0.15s, transform 0.12s;
-    }
-
-    .btn-plus:active {
-      transform: scale(0.92);
-    }
-
-    .btn-plus:hover {
-      background: var(--primary);
-      color: #ffffff;
-    }
-
-    .qty-pill {
-      display: inline-flex;
-      align-items: center;
-      background: var(--primary);
-      color: #ffffff;
-      border-radius: 10px;
-      height: 34px;
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(27, 94, 32, 0.3);
-    }
-
-    .qty-pill button {
-      width: 28px;
-      height: 34px;
-      border: none;
-      background: transparent;
-      color: #ffffff;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qty-pill button:active {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .qty-pill span {
-      min-width: 22px;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-
-    .product-body {
-      padding: 10px 10px 12px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .product-title {
-      margin: 0;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .product-desc {
-      margin: 0;
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      line-height: 1.35;
-      min-height: 2.7em;
-    }
-
-    .product-controls {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .size-select {
-      width: 100%;
-      padding: 6px 8px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: #f9fbf9;
-      color: var(--text);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      outline: none;
-    }
-
-    .size-select:focus {
-      border-color: var(--primary);
-    }
-
-    .size-select:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .price-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-    }
-
-    .product-price {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .unit-tag {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    /* Cart View */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      gap: 12px;
-    }
-
-    .section-header h2 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--primary-dark);
-    }
-
-    .btn-text-danger {
-      background: transparent;
-      border: none;
-      color: var(--danger);
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 6px 10px;
-      border-radius: var(--radius-sm);
-    }
-
-    .btn-text-danger:hover {
-      background: #ffebee;
-    }
-
-    .cart-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .cart-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .cart-item-img {
-      width: 60px;
-      height: 60px;
-      border-radius: var(--radius-sm);
-      object-fit: cover;
-      background: #eef3ee;
-      flex-shrink: 0;
-    }
-
-    .cart-item-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .cart-item-title {
-      margin: 0;
-      font-size: 0.92rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .cart-item-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .cart-item-price {
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-top: 4px;
-    }
-
-    .cart-summary-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 0.95rem;
-    }
-
-    .summary-row.total {
-      border-top: 1px dashed var(--border);
-      padding-top: 12px;
-      margin-top: 8px;
-      margin-bottom: 16px;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--primary-dark);
-    }
-
-    .btn-primary-full {
-      width: 100%;
-      padding: 14px 18px;
-      border: none;
-      border-radius: var(--radius-md);
-      background: var(--accent);
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(211, 84, 0, 0.28);
-      transition: background 0.2s, transform 0.12s;
-    }
-
-    .btn-primary-full:hover {
-      background: var(--accent-dark);
-    }
-
-    .btn-primary-full:active {
-      transform: scale(0.98);
-    }
-
-    .btn-primary-full:disabled {
-      background: #b0bec5;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    .btn-green-full {
-      background: var(--primary);
-      box-shadow: 0 4px 14px rgba(27, 94, 32, 0.25);
-    }
-
-    .btn-green-full:hover {
-      background: var(--primary-dark);
-    }
-
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 48px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text-muted);
-    }
-
-    .empty-state-icon {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .empty-state h3 {
-      margin: 0 0 6px;
-      color: var(--text);
-      font-size: 1.05rem;
-    }
-
-    .empty-state p {
-      margin: 0 0 18px;
-      font-size: 0.88rem;
-    }
-
-    .btn-outline {
-      padding: 10px 18px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--primary);
-      background: transparent;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-    }
-
-    /* My Orders Tab */
-    .orders-lookup-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .orders-lookup-form {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: var(--text);
-      background: #ffffff;
-      outline: none;
-    }
-
-    .input-field:focus {
-      border-color: var(--primary);
-    }
-
-    .btn-lookup {
-      padding: 0 18px;
-      border: none;
-      border-radius: var(--radius-sm);
-      background: var(--primary);
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .orders-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .order-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--primary);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .order-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #eef2ef;
-    }
-
-    .order-date {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .order-status-pill {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .order-body-pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: inherit;
-      font-size: 0.86rem;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    /* Secret Admin Home Screen */
-    .admin-header-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: var(--primary-dark);
-      color: #ffffff;
-      padding: 16px 20px;
-      border-radius: var(--radius-md);
-      margin-bottom: 18px;
-    }
-
-    .admin-header-bar h2 {
-      margin: 0;
-      font-size: 1.15rem;
-    }
-
-    .admin-header-bar p {
-      margin: 2px 0 0;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .btn-back-store {
-      padding: 9px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      background: rgba(255, 255, 255, 0.14);
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 0.84rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
-    }
-
-    .admin-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 18px;
+    /* PIN Lock Screen */
+    .lock-screen {
+      position: fixed; inset: 0; background: var(--primary);
+      display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200;
+    }
+    .lock-card {
+      background: #fff; padding: 28px 22px; border-radius: 18px; width: 100%; max-width: 340px;
+      text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+    }
+    .lock-card h2 { margin: 0 0 6px; color: var(--primary-dark); }
+    .lock-card p { margin: 0 0 18px; font-size: 0.85rem; color: var(--muted); }
+
+    /* Header & Tabs */
+    .topbar {
+      position: sticky; top: 0; z-index: 40;
+      background: var(--primary); color: #fff;
+      padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.14);
+    }
+    .topbar h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+    .topbar-actions { display: flex; gap: 8px; }
+    .btn-top {
+      background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+      padding: 7px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
       text-decoration: none;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
 
-    .admin-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary);
-      box-shadow: var(--shadow-md);
+    .tabs {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      background: #fff; border-bottom: 1px solid var(--border);
+      position: sticky; top: 53px; z-index: 35;
     }
-
-    .admin-card-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: var(--primary-light);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
+    .tab-btn {
+      padding: 12px 6px; border: none; border-bottom: 3px solid transparent;
+      background: transparent; color: var(--muted); font-weight: 700; font-size: 0.84rem; cursor: pointer;
     }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #f8fbf8; }
 
-    .admin-card h3 {
-      margin: 0;
-      font-size: 0.98rem;
-      font-weight: 700;
+    .container { max-width: 1000px; margin: 0 auto; padding: 14px 12px 80px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* KPI Stats Grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    @media (min-width: 700px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+    .kpi-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
+    .kpi-label { font-size: 0.76rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .kpi-value { font-size: 1.45rem; font-weight: 800; color: var(--primary-dark); margin-top: 4px; }
+    .kpi-sub { font-size: 0.74rem; color: var(--accent); font-weight: 600; margin-top: 2px; }
 
-    .admin-card p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    /* Card & Bars */
+    .panel {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 14px;
     }
+    .panel h3 { margin: 0 0 12px; font-size: 1rem; color: var(--primary-dark); }
+    .bar-row { margin-bottom: 10px; }
+    .bar-head { display: flex; justify-content: space-between; font-size: 0.83rem; font-weight: 600; margin-bottom: 4px; }
+    .bar-track { height: 8px; background: #e8eee9; border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--primary); border-radius: 99px; }
 
-    /* Floating Cart Button */
-    .floating-cart-btn {
-      position: fixed;
-      right: 18px;
-      bottom: 20px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: none;
-      background: var(--accent);
-      color: #ffffff;
-      box-shadow: 0 6px 20px rgba(211, 84, 0, 0.42);
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      transition: transform 0.15s ease;
+    /* Filters & Inputs */
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .input {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #fff;
     }
+    .input:focus { outline: none; border-color: var(--primary); }
+    .toolbar .input { flex: 1; min-width: 160px; }
 
-    .floating-cart-btn.visible {
-      display: flex;
+    .btn {
+      padding: 10px 14px; border: none; border-radius: 10px; font-weight: 700; font-size: 0.86rem;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-danger { background: #ffebee; color: var(--danger); }
+    .btn-sm { padding: 6px 10px; font-size: 0.78rem; border-radius: 8px; }
 
-    .floating-cart-btn:active {
-      transform: scale(0.92);
+    /* Order Cards */
+    .order-card {
+      background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--primary);
+      border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
     }
+    .order-card.status-Pending { border-left-color: #f57c00; }
+    .order-card.status-Delivered { border-left-color: #2e7d32; }
+    .order-card.status-Cancelled { border-left-color: var(--danger); opacity: 0.75; }
 
-    .floating-cart-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: var(--primary);
-      color: #ffffff;
-      border: 2px solid #ffffff;
-      font-size: 0.74rem;
-      font-weight: 800;
-      min-width: 24px;
-      height: 24px;
-      padding: 0 5px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .order-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .order-meta { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .order-pre {
+      margin: 0 0 10px; white-space: pre-wrap; font-family: inherit; font-size: 0.85rem;
+      background: #f8faf8; padding: 10px; border-radius: 8px; border: 1px solid #edf2ee;
     }
+    .order-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
-    /* Modals (Bottom-Sheet on Mobile, Centered on Desktop) */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(12, 24, 14, 0.56);
-      backdrop-filter: blur(2px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+    /* Product Management List */
+    .prod-row {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between;
+      align-items: center; gap: 10px; flex-wrap: wrap;
     }
+    .prod-info { flex: 1; min-width: 200px; }
+    .prod-info h4 { margin: 0 0 4px; font-size: 0.95rem; }
+    .prod-prices { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .prod-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-    .modal-backdrop.open {
-      display: flex;
+    .badge-in { background: var(--primary-light); color: var(--primary); padding: 4px 9px; border-radius: 99px; font-size: 0.74rem; font-weight: 700; }
+    .badge-out { background: #ffebee; color: var(--danger); padding: 4px 9px; border-radius: 99px; font-size: 0.74rem; font-weight: 700; }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 150;
+      display: none; align-items: center; justify-content: center; padding: 14px;
     }
-
-    .modal-sheet {
-      background: var(--surface);
-      width: 100%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow-y: auto;
-      border-radius: var(--radius-lg);
-      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
-      position: relative;
-      animation: modalFadeIn 0.2s ease-out;
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: #fff; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+      border-radius: 16px; padding: 18px;
     }
+    .modal-box h3 { margin: 0 0 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: var(--muted); }
 
-    @keyframes modalFadeIn {
-      from { opacity: 0; transform: translateY(16px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .modal-close-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255, 255, 255, 0.92);
-      color: var(--text);
-      font-size: 1.2rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
-      z-index: 10;
-    }
-
-    .modal-product-img {
-      width: 100%;
-      aspect-ratio: 16 / 11;
-      object-fit: cover;
-      background: #eef3ee;
-      display: block;
-    }
-
-    .modal-product-img.oos {
-      filter: grayscale(100%) brightness(0.75);
-    }
-
-    .modal-body {
-      padding: 18px 20px 22px;
-    }
-
-    .modal-title {
-      margin: 0 0 6px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .modal-desc {
-      margin: 0 0 16px;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .modal-price-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding: 12px;
-      background: var(--bg);
-      border-radius: var(--radius-md);
-    }
-
-    .modal-price-value {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .modal-size-select {
-      padding: 9px 12px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border);
-      background: #ffffff;
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: var(--text);
-      min-width: 140px;
-    }
-
-    .modal-qty-full {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--primary);
-      color: #ffffff;
-      border-radius: var(--radius-md);
-      height: 48px;
-      overflow: hidden;
-    }
-
-    .modal-qty-full button {
-      width: 56px;
-      height: 100%;
-      border: none;
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-      font-size: 1.4rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .modal-qty-full span {
-      font-size: 1rem;
-      font-weight: 800;
-    }
-
-    /* Checkout Form */
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.84rem;
-      font-weight: 700;
-      margin-bottom: 5px;
-      color: var(--text);
-    }
-
-    textarea.input-field {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .checkout-mini-summary {
-      background: var(--primary-light);
-      color: var(--primary-dark);
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    /* Toast Notification */
+    /* Toast */
     .toast {
-      position: fixed;
-      top: 16px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      background: #1c241d;
-      color: #ffffff;
-      padding: 11px 18px;
-      border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      z-index: 200;
-      opacity: 0;
-      transition: transform 0.25s ease, opacity 0.25s ease;
-      max-width: calc(100vw - 32px);
-      text-align: center;
-      pointer-events: none;
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      background: #1c241d; color: #fff; padding: 10px 18px; border-radius: 99px;
+      font-size: 0.85rem; font-weight: 600; z-index: 300; transition: 0.25s; opacity: 0;
     }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .toast.error {
-      background: var(--danger);
-    }
-
-    .toast.success {
-      background: var(--primary);
-    }
-
-    /* Loading Skeleton */
-    .skeleton-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      padding-bottom: 12px;
-    }
-
-    .skeleton-box {
-      background: linear-gradient(90deg, #e8eee9 25%, #f3f7f4 50%, #e8eee9 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* Responsive Breakpoints */
-    @media (max-width: 1100px) {
-      .products-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 768px) {
-      .app-shell {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .mobile-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        position: sticky;
-        top: 0;
-        z-index: 45;
-        background: var(--primary);
-        color: #ffffff;
-        padding: 10px 14px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
-        width: 100%;
-      }
-
-      .mobile-brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-
-      .mobile-brand h1 {
-        margin: 0;
-        font-size: 1.02rem;
-        font-weight: 800;
-        line-height: 1.18;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .mobile-brand p {
-        margin: 2px 0 0;
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.86);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .mobile-share-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(255, 255, 255, 0.14);
-        color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        cursor: pointer;
-      }
-
-      .mobile-tabs {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        background: var(--surface);
-        border-bottom: 1px solid var(--border);
-        position: sticky;
-        top: 66px;
-        z-index: 40;
-        width: 100%;
-      }
-
-      .mobile-tab-btn {
-        padding: 11px 6px;
-        border: none;
-        border-bottom: 3px solid transparent;
-        background: transparent;
-        color: var(--text-muted);
-        font-size: 0.84rem;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-      }
-
-      .mobile-tab-btn.active {
-        color: var(--primary);
-        border-bottom-color: var(--primary);
-        background: #f8fbf8;
-      }
-
-      .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 12px 12px 92px;
-      }
-
-      /* Strictly equal-width 2-column mobile grid */
-      .products-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      /* Bottom-sheet modal on mobile */
-      .modal-backdrop {
-        align-items: flex-end;
-        padding: 0;
-      }
-
-      .modal-sheet {
-        max-width: 100%;
-        border-radius: 22px 22px 0 0;
-        max-height: 88vh;
-        animation: slideUpSheet 0.24s ease-out;
-      }
-
-      @keyframes slideUpSheet {
-        from { transform: translateY(100%); }
-        to { transform: translateY(0); }
-      }
-    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="toast" class="toast"></div>
 
-  <div class="app-shell">
-    <!-- Desktop Sidebar -->
-    <aside class="sidebar">
-      <div class="brand-block">
-        <svg class="logo-svg" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wayanad Farm Fresh Logo">
-          <circle cx="23" cy="23" r="22" fill="#ffffff" stroke="#d35400" stroke-width="2" />
-          <circle cx="23" cy="23" r="18" fill="#e8f5e9" />
-          <path class="logo-leaf-left" d="M23 28C15 26 11 19 13 12C19 13 23 19 23 28Z" fill="#2e7d32" />
-          <path class="logo-leaf-right" d="M23 28C31 26 35 19 33 12C27 13 23 19 23 28Z" fill="#1b5e20" />
-          <g class="logo-bean">
-            <ellipse cx="23" cy="27" rx="7.5" ry="9.5" fill="#d35400" stroke="#ffffff" stroke-width="1.5" />
-            <path d="M23 19C20.5 23 25.5 31 23 35" stroke="#fff3e0" stroke-width="1.8" stroke-linecap="round" />
-          </g>
-        </svg>
-        <div class="brand-info">
-          <h1>Wayanadan Spices</h1>
-          <p>Pure Spices &amp; Coffee Farmed in Wayanad</p>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav" aria-label="Main Navigation">
-        <button class="nav-btn active" data-tab="products">
-          <span class="nav-btn-left">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            Products
-          </span>
-        </button>
-        <button class="nav-btn" data-tab="cart">
-          <span class="nav-btn-left">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-            Cart
-          </span>
-          <span class="nav-badge hidden" id="desktopCartBadge">0</span>
-        </button>
-        <button class="nav-btn" data-tab="orders">
-          <span class="nav-btn-left">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            My Orders
-          </span>
-        </button>
-      </nav>
-
-      <div class="sidebar-footer">
-        <button class="share-desktop-btn" id="desktopShareBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          Share Store
-        </button>
-      </div>
-    </aside>
-
-    <!-- Mobile Sticky Header -->
-    <header class="mobile-header">
-      <div class="mobile-brand">
-        <svg class="logo-svg" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wayanad Farm Fresh Logo">
-          <circle cx="23" cy="23" r="22" fill="#ffffff" stroke="#d35400" stroke-width="2" />
-          <circle cx="23" cy="23" r="18" fill="#e8f5e9" />
-          <path class="logo-leaf-left" d="M23 28C15 26 11 19 13 12C19 13 23 19 23 28Z" fill="#2e7d32" />
-          <path class="logo-leaf-right" d="M23 28C31 26 35 19 33 12C27 13 23 19 23 28Z" fill="#1b5e20" />
-          <g class="logo-bean">
-            <ellipse cx="23" cy="27" rx="7.5" ry="9.5" fill="#d35400" stroke="#ffffff" stroke-width="1.5" />
-            <path d="M23 19C20.5 23 25.5 31 23 35" stroke="#fff3e0" stroke-width="1.8" stroke-linecap="round" />
-          </g>
-        </svg>
-        <div style="min-width:0;">
-          <h1>Wayanad Farm Fresh</h1>
-          <p>Pure Spices &amp; Coffee Farmed in Wayanad</p>
-        </div>
-      </div>
-      <button class="mobile-share-btn" id="mobileShareBtn" aria-label="Share Store">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      </button>
-    </header>
-
-    <!-- Mobile 3-Tab Navigation -->
-    <nav class="mobile-tabs" aria-label="Mobile Navigation">
-      <button class="mobile-tab-btn active" data-tab="products">Products</button>
-      <button class="mobile-tab-btn" data-tab="cart">
-        Cart <span class="nav-badge hidden" id="mobileCartBadge">0</span>
-      </button>
-      <button class="mobile-tab-btn" data-tab="orders">My Orders</button>
-    </nav>
-
-    <!-- Main Scrollable Area -->
-    <main class="main-content">
-      <div class="container">
-        <!-- Live Animated Announcement Banner -->
-        <div id="announcementBanner" class="announcement-banner" role="region" aria-label="Store Announcements">
-          <span class="announcement-icon">📢</span>
-          <div class="announcement-text-wrap">
-            <span id="announcementText"></span><span class="typewriter-cursor"></span>
-          </div>
-        </div>
-
-        <!-- PRODUCTS VIEW -->
-        <section id="view-products" class="view-section active">
-          <div class="search-bar-wrap">
-            <span class="search-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
-            <input
-              type="search"
-              id="searchInput"
-              class="search-input"
-              placeholder="Search pepper, kappi, chukku, manjal, kudampuli..."
-              autocomplete="off"
-            />
-            <button type="button" id="searchClear" class="search-clear" aria-label="Clear search">&times;</button>
-          </div>
-
-          <div id="productsGrid" class="products-grid"></div>
-        </section>
-
-        <!-- CART VIEW -->
-        <section id="view-cart" class="view-section">
-          <div class="section-header">
-            <h2>Your Cart</h2>
-            <button type="button" id="clearCartBtn" class="btn-text-danger" style="display:none;">Clear Cart</button>
-          </div>
-          <div id="cartContainer"></div>
-        </section>
-
-        <!-- MY ORDERS VIEW -->
-        <section id="view-orders" class="view-section">
-          <div class="section-header">
-            <h2>My Orders</h2>
-          </div>
-          <div class="orders-lookup-card">
-            <label for="orderPhoneInput" class="form-label">Track Past Orders by Mobile Number</label>
-            <form id="orderLookupForm" class="orders-lookup-form">
-              <input
-                type="tel"
-                id="orderPhoneInput"
-                class="input-field"
-                placeholder="Enter 10-digit mobile number"
-                inputmode="numeric"
-                maxlength="15"
-              />
-              <button type="submit" class="btn-lookup">Find Orders</button>
-            </form>
-          </div>
-          <div id="ordersList" class="orders-list"></div>
-        </section>
-
-        <!-- SECRET ADMIN HOME SCREEN -->
-        <section id="view-admin" class="view-section">
-          <div class="admin-header-bar">
-            <div>
-              <h2>Admin Control Center</h2>
-              <p>Wayanad Farm Fresh — Store Management</p>
-            </div>
-            <button type="button" id="backToStoreBtn" class="btn-back-store">&larr; Back to Store</button>
-          </div>
-
-          <div class="admin-grid">
-            <a href="history.html" class="admin-card">
-              <div class="admin-card-icon">📋</div>
-              <h3>Order History</h3>
-              <p>Browse, filter, and inspect all customer orders.</p>
-            </a>
-            <a href="editor.html" class="admin-card">
-              <div class="admin-card-icon">✏️</div>
-              <h3>Apps Script Order Editor</h3>
-              <p>Update order statuses and edit customer entries.</p>
-            </a>
-            <a href="admin.html" class="admin-card">
-              <div class="admin-card-icon">🧮</div>
-              <h3>Settlement Calculator</h3>
-              <p>Calculate farm payouts, margins, and daily totals.</p>
-            </a>
-            <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener" id="adminProductsSheetLink" class="admin-card">
-              <div class="admin-card-icon">📊</div>
-              <h3>Open Products Sheet</h3>
-              <p>Edit prices, stock toggles, and live announcements.</p>
-            </a>
-            <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener" id="adminResponsesSheetLink" class="admin-card">
-              <div class="admin-card-icon">📑</div>
-              <h3>Open Responses Sheet</h3>
-              <p>View raw Google Form order submissions in Sheets.</p>
-            </a>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <!-- Floating Cart Button -->
-  <button type="button" id="floatingCartBtn" class="floating-cart-btn" aria-label="Open Cart">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    <span class="floating-cart-badge" id="floatingCartBadge">0</span>
-  </button>
-
-  <!-- Product Details Bottom-Sheet Modal -->
-  <div id="productModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
-    <div class="modal-sheet">
-      <button type="button" class="modal-close-btn" id="closeProductModal" aria-label="Close">&times;</button>
-      <img id="modalProductImg" class="modal-product-img" src="" alt="" />
-      <div class="modal-body">
-        <h3 id="modalProductTitle" class="modal-title"></h3>
-        <p id="modalProductDesc" class="modal-desc"></p>
-        <div class="modal-price-bar">
-          <div>
-            <div style="font-size:0.74rem; color:var(--text-muted); font-weight:600;">Price</div>
-            <div id="modalProductPrice" class="modal-price-value">₹0</div>
-          </div>
-          <select id="modalSizeSelect" class="modal-size-select" aria-label="Select Pack Size"></select>
-        </div>
-        <div id="modalActionContainer"></div>
-      </div>
+  <!-- PIN Lock -->
+  <div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+      <h2>🌿 Admin Login</h2>
+      <p>Wayanad Farm Fresh Control Center</p>
+      <form id="pinForm">
+        <input type="password" id="pinInput" class="input" placeholder="Enter Admin PIN" inputmode="numeric" style="text-align:center; font-size:1.1rem; margin-bottom:12px;" required />
+        <button type="submit" class="btn btn-primary" style="width:100%;">Unlock Dashboard</button>
+      </form>
     </div>
   </div>
 
-  <!-- Checkout Modal -->
-  <div id="checkoutModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
-    <div class="modal-sheet">
-      <button type="button" class="modal-close-btn" id="closeCheckoutModal" aria-label="Close">&times;</button>
-      <div class="modal-body">
-        <h3 id="checkoutModalTitle" class="modal-title" style="margin-bottom:14px;">Delivery Details</h3>
-        <div id="checkoutMiniSummary" class="checkout-mini-summary"></div>
-        <form id="checkoutForm" novalidate>
-          <div class="form-group">
-            <label for="custName" class="form-label">Full Name *</label>
-            <input type="text" id="custName" class="input-field" placeholder="Enter your name" required />
-          </div>
-          <div class="form-group">
-            <label for="custPhone" class="form-label">Mobile Number (10 digits) *</label>
-            <input type="tel" id="custPhone" class="input-field" placeholder="e.g. 9876543210" inputmode="numeric" maxlength="10" required />
-          </div>
-          <div class="form-group">
-            <label for="custAddress" class="form-label">Delivery Address &amp; Pincode *</label>
-            <textarea id="custAddress" class="input-field" placeholder="House name, street, landmark, city, pincode" required></textarea>
-          </div>
-          <button type="submit" id="submitOrderBtn" class="btn-primary-full btn-green-full">
-            Place Order on WhatsApp
-          </button>
-        </form>
+  <!-- Header -->
+  <header class="topbar">
+    <h1>🌿 Wayanad Admin</h1>
+    <div class="topbar-actions">
+      <button type="button" class="btn-top" id="refreshBtn">↻ Sync</button>
+      <a href="index.html" class="btn-top">Store &rarr;</a>
+    </div>
+  </header>
+
+  <!-- 3 Tabs -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="stats">Statistics</button>
+    <button class="tab-btn" data-tab="orders">Orders (<span id="orderCountTab">0</span>)</button>
+    <button class="tab-btn" data-tab="products">Products</button>
+  </nav>
+
+  <main class="container">
+    <!-- 1. STATISTICS VIEW -->
+    <section id="view-stats" class="view active">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value" id="kpiRevenue">₹0</div>
+          <div class="kpi-sub">Excl. cancelled</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Total Orders</div>
+          <div class="kpi-value" id="kpiOrders">0</div>
+          <div class="kpi-sub" id="kpiPending">0 pending</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Today's Sales</div>
+          <div class="kpi-value" id="kpiToday">₹0</div>
+          <div class="kpi-sub" id="kpiTodayCount">0 orders today</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Order Value</div>
+          <div class="kpi-value" id="kpiAov">₹0</div>
+          <div class="kpi-sub">Per valid order</div>
+        </div>
       </div>
+
+      <div class="panel">
+        <h3>Top Selling Products</h3>
+        <div id="topProductsChart">Loading...</div>
+      </div>
+
+      <div class="panel">
+        <h3>Order Status Breakdown</h3>
+        <div id="statusChart">Loading...</div>
+      </div>
+    </section>
+
+    <!-- 2. ORDERS MANAGEMENT VIEW -->
+    <section id="view-orders" class="view">
+      <div class="toolbar">
+        <input type="search" id="orderSearch" class="input" placeholder="Search name, phone, item..." />
+        <select id="orderStatusFilter" class="input" style="max-width:150px;">
+          <option value="ALL">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Packed">Packed</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div id="ordersList"></div>
+    </section>
+
+    <!-- 3. PRODUCTS & ANNOUNCEMENTS VIEW -->
+    <section id="view-products" class="view">
+      <div class="panel">
+        <h3>📢 Live Store Announcement Banner</h3>
+        <div class="toolbar" style="margin-bottom:0;">
+          <input type="text" id="announcementInput" class="input" placeholder="Use | to separate multiple announcements..." />
+          <button type="button" id="saveAnnouncementBtn" class="btn btn-accent">Save Banner</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="productSearch" class="input" placeholder="Filter products..." />
+        <button type="button" id="addProductBtn" class="btn btn-primary">+ Add Product</button>
+      </div>
+
+      <div id="productsList"></div>
+    </section>
+  </main>
+
+  <!-- Product Add/Edit Modal -->
+  <div id="productModal" class="modal-bg">
+    <div class="modal-box">
+      <h3 id="prodModalTitle">Add Product</h3>
+      <form id="productForm">
+        <input type="hidden" id="pRowNumber" />
+        <div class="field">
+          <label>Product Name *</label>
+          <input type="text" id="pName" class="input" required />
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="pDesc" class="input" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label>Image URL</label>
+          <input type="url" id="pImage" class="input" placeholder="https://..." />
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>100g Price (₹)</label><input type="number" id="p100" class="input" placeholder="Leave blank to skip" /></div>
+          <div class="field"><label>250g Price (₹)</label><input type="number" id="p250" class="input" /></div>
+          <div class="field"><label>500g Price (₹)</label><input type="number" id="p500" class="input" /></div>
+          <div class="field"><label>1kg Price (₹)</label><input type="number" id="p1000" class="input" /></div>
+        </div>
+        <div class="field">
+          <label>Stock Status</label>
+          <select id="pStock" class="input">
+            <option value="in">In Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn btn-outline" id="closeProdModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save to Sheet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Edit Modal -->
+  <div id="orderModal" class="modal-bg">
+    <div class="modal-box">
+      <h3>Edit Order</h3>
+      <form id="orderEditForm">
+        <input type="hidden" id="oRowNumber" />
+        <div class="field">
+          <label>Status</label>
+          <select id="oStatus" class="input">
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Packed">Packed</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Order Details</label>
+          <textarea id="oRawText" class="input" rows="8"></textarea>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn btn-outline" id="closeOrderModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Sheet</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <script>
     (() => {
-      // ==========================================
-      // 1. CONFIGURATION
-      // ==========================================
-      const CONFIG = {
-        brandName: "Wayanad Farm Fresh",
-        tagline: "Pure Spices & Coffee Farmed in Wayanad",
-        whatsappNumber: "918590360735",
-        productsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjR1C6Vp_ecdkKYF6cO2zRE3B8geHXb4SUFU57g-eOFUCRS6jRv-aE66NChKgnkEXCjKsz-sWePqF8/pub?gid=1756612013&single=true&output=csv",
-        ordersCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRYN4GykKjslabTW2aDjHnDV0HjCEgjE_MlGG5yFJHu3ZAAXBjVey9-rlDN97gSlIF3LTjlBjPI7UZj/pub?gid=768478150&single=true&output=csv",
-        formResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfhJsxMl1ItAVjD4xtmmtEZZbvGfu9Aazt_L9ml9BuiViQG7w/formResponse",
-        formEntryId: "entry.1571825356",
-        // Optional: replace with your direct editable Google Sheets URLs for the Admin Home Screen
-        productsEditSheetUrl: "https://docs.google.com/spreadsheets/",
-        responsesEditSheetUrl: "https://docs.google.com/spreadsheets/"
-      };
+      // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE
+      const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB60Phaq0duRgs3y86CJnx5OAUFugVuu47m4DEhCXmw84O8eTg6eIhEjh3sB1HRhwZ/exec";
 
-      const WEIGHT_TIERS = [
-        { key: "p100", label: "100g" },
-        { key: "p250", label: "250g" },
-        { key: "p500", label: "500g" },
-        { key: "p1000", label: "1kg" }
-      ];
+      let adminPin = sessionStorage.getItem("wff_admin_pin") || "";
+      let allProducts = [];
+      let allOrders = [];
+      let announcementRow = null;
 
-      // Malayalam / Manglish Search Synonym Dictionary
-      const SEARCH_SYNONYMS = {
-        kurumulaku: ["pepper", "black pepper", "green pepper", "pacha", "കുരുമുളക്"],
-        pepper: ["kurumulaku", "pacha", "black", "green", "കുരുമുളക്"],
-        pacha: ["green pepper", "kurumulaku"],
-        kappi: ["coffee", "coffee powder", "coffee mix", "കാപ്പി"],
-        kaappi: ["coffee", "coffee powder", "coffee mix", "കാപ്പി"],
-        coffee: ["kappi", "kaappi", "കാപ്പി"],
-        chukku: ["dry ginger", "ginger", "ചുക്ക്"],
-        inchi: ["fresh ginger", "ginger", "ഇഞ്ചി"],
-        inji: ["fresh ginger", "ginger", "ഇഞ്ചി"],
-        ginger: ["chukku", "inchi", "inji", "ചുക്ക്", "ഇഞ്ചി"],
-        manjal: ["turmeric", "മഞ്ഞൾ"],
-        manhal: ["turmeric", "മഞ്ഞൾ"],
-        turmeric: ["manjal", "manhal", "മഞ്ഞൾ"],
-        kudampuli: ["malabar tamarind", "tamarind", "puli", "കുടംപുളി"],
-        kodampuli: ["malabar tamarind", "tamarind", "puli", "കുടംപുളി"],
-        tamarind: ["kudampuli", "kodampuli", "puli", "കുടംപുളി"],
-        puli: ["kudampuli", "tamarind", "കുടംപുളി"],
-        "കുരുമുളക്": ["pepper", "kurumulaku"],
-        "കാപ്പി": ["coffee", "kappi"],
-        "ചുക്ക്": ["dry ginger", "chukku"],
-        "ഇഞ്ചി": ["fresh ginger", "inchi"],
-        "മഞ്ഞൾ": ["turmeric", "manjal"],
-        "കുടംപുളി": ["kudampuli", "tamarind"]
-      };
-
-      // Fallback Wayanad Catalog
-      const SAMPLE_PRODUCTS = [
-        {
-          name: "Green Pepper (Pacha Kurumulaku)",
-          description: "Fresh green peppercorns with natural aroma and flavour.",
-          image: "",
-          p100: 90, p250: 210, p500: 400, p1000: 750,
-          stock: "in"
-        },
-        {
-          name: "Black Pepper (Dried)",
-          description: "Naturally dried black pepper with a rich aroma and strong flavour.",
-          image: "",
-          p100: 100, p250: 230, p500: 450, p1000: 880,
-          stock: "in"
-        },
-        {
-          name: "Pure Coffee Powder",
-          description: "Rich and aromatic coffee powder for everyday coffee preparation.",
-          image: "",
-          p100: 110, p250: 260, p500: 500, p1000: 950,
-          stock: "in"
-        },
-        {
-          name: "Wayanadan Traditional Coffee Mix",
-          description: "Coffee powder blended with aromatic spices such as cardamom, dry ginger, cinnamon, cloves and fenugreek.",
-          image: "",
-          p100: 130, p250: 300, p500: 580, p1000: 1100,
-          stock: "in"
-        },
-        {
-          name: "Dry Ginger (Chukku)",
-          description: "Quality dried ginger with a distinctive aroma and flavour.",
-          image: "",
-          p100: 65, p250: 150, p500: 290, p1000: 550,
-          stock: "in"
-        },
-        {
-          name: "Fresh Ginger (Inchi)",
-          description: "Fresh ginger suitable for cooking and traditional preparations.",
-          image: "",
-          p100: "", p250: 40, p500: 80, p1000: 150,
-          stock: "in"
-        },
-        {
-          name: "Turmeric (Manjal)",
-          description: "Natural turmeric with earthy flavour and rich colour.",
-          image: "",
-          p100: 40, p250: 90, p500: 170, p1000: 320,
-          stock: "in"
-        },
-        {
-          name: "Kudampuli (Malabar Tamarind)",
-          description: "Traditional dried Malabar tamarind used in Kerala cooking, especially fish curry.",
-          image: "",
-          p100: 70, p250: 160, p500: 310, p1000: 600,
-          stock: "in"
-        }
-      ];
-
-      // ==========================================
-      // 2. STATE MANAGEMENT
-      // ==========================================
-      let products = [];
-      let selectedWeights = {}; // productId -> weightKey (e.g. "p100")
-      let cart = loadJSON("wff_cart", {}); // `${productId}__${weightKey}` -> { productId, name, image, weightKey, weightLabel, price, qty }
-      let activeModalProductId = null;
-      let toastTimer = null;
-      let announcementTimer = null;
-
-      // ==========================================
-      // 3. UTILITIES
-      // ==========================================
-      function loadJSON(key, fallback) {
-        try {
-          const raw = localStorage.getItem(key);
-          return raw ? JSON.parse(raw) : fallback;
-        } catch {
-          return fallback;
-        }
-      }
-
-      function saveJSON(key, value) {
-        try {
-          localStorage.setItem(key, JSON.stringify(value));
-        } catch { /* ignore storage quota errors */ }
-      }
-
-      function showToast(message, type = "default") {
+      function toast(msg) {
         const el = document.getElementById("toast");
-        el.textContent = message;
-        el.className = "toast show" + (type !== "default" ? " " + type : "");
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => {
-          el.classList.remove("show");
-        }, 2800);
+        el.textContent = msg;
+        el.classList.add("show");
+        setTimeout(() => el.classList.remove("show"), 2600);
       }
 
-      function escapeHtml(str) {
-        return String(str ?? "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#39;");
-      }
-
-      function makeFallbackImage(name) {
-        const lower = (name || "").toLowerCase();
-        let bg1 = "#2e7d32", bg2 = "#1b5e20", emoji = "🌿";
-        if (lower.includes("coffee")) { bg1 = "#5d4037"; bg2 = "#3e2723"; emoji = "☕"; }
-        else if (lower.includes("black pepper")) { bg1 = "#37474f"; bg2 = "#1c241d"; emoji = "⚫"; }
-        else if (lower.includes("green pepper")) { bg1 = "#2e7d32"; bg2 = "#1b5e20"; emoji = "🟢"; }
-        else if (lower.includes("turmeric") || lower.includes("manjal")) { bg1 = "#f57f17"; bg2 = "#d35400"; emoji = "✨"; }
-        else if (lower.includes("ginger") || lower.includes("chukku") || lower.includes("inchi")) { bg1 = "#a1887f"; bg2 = "#6d4c41"; emoji = "🫚"; }
-        else if (lower.includes("kudampuli") || lower.includes("tamarind")) { bg1 = "#4e342e"; bg2 = "#261612"; emoji = "🍂"; }
-
-        const shortLabel = (name || "Farm Fresh").slice(0, 22).replace(/&/g, "and");
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
-          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs>
-          <rect width="400" height="400" fill="url(#g)"/>
-          <circle cx="200" cy="170" r="68" fill="rgba(255,255,255,0.14)"/>
-          <text x="200" y="192" font-size="64" text-anchor="middle">${emoji}</text>
-          <text x="200" y="285" font-family="sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">${shortLabel}</text>
-          <text x="200" y="316" font-family="sans-serif" font-size="14" fill="rgba(255,255,255,0.78)" text-anchor="middle">Wayanad Farm Fresh</text>
-        </svg>`;
-        return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-      }
-
-      function normalizeRow(rawRow) {
-        const cleaned = {};
-        Object.keys(rawRow || {}).forEach((k) => {
-          const cleanKey = String(k).trim().toLowerCase();
-          cleaned[cleanKey] = typeof rawRow[k] === "string" ? rawRow[k].trim() : rawRow[k];
+      async function apiCall(payload) {
+        if (APPS_SCRIPT_URL.includes("PASTE_YOUR")) {
+          toast("Set APPS_SCRIPT_URL in admin.html first");
+          throw new Error("Missing URL");
+        }
+        // text/plain avoids CORS preflight issues with Google Apps Script
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ ...payload, pin: adminPin })
         });
-        return cleaned;
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Request failed");
+        return data;
       }
 
-      function parsePrice(val) {
-        if (val === undefined || val === null || val === "") return null;
-        const num = parseFloat(String(val).replace(/[^\d.]/g, ""));
-        return Number.isFinite(num) && num > 0 ? num : null;
-      }
+      async function syncAll() {
+        toast("Syncing with Google Sheets...");
+        try {
+          const data = await apiCall({ action: "getDashboard" });
+          document.getElementById("lockScreen").style.display = "none";
+          sessionStorage.setItem("wff_admin_pin", adminPin);
 
-      function isOutOfStock(stockVal) {
-        const s = String(stockVal ?? "").trim().toLowerCase();
-        return s === "out" || s === "out of stock" || s === "no" || s === "0";
-      }
+          const rawProds = data.products || [];
+          announcementRow = rawProds.find(p => String(p.name || "").trim().toUpperCase() === "ANNOUNCEMENT") || null;
+          allProducts = rawProds.filter(p => String(p.name || "").trim().toUpperCase() !== "ANNOUNCEMENT");
+          allOrders = data.orders || [];
 
-      function buildProductObjects(rows) {
-        const announcements = [];
-        const list = [];
+          document.getElementById("announcementInput").value = announcementRow ? (announcementRow.description || "") : "";
+          document.getElementById("orderCountTab").textContent = allOrders.length;
 
-        rows.forEach((raw, idx) => {
-          const row = normalizeRow(raw);
-          const name = String(row.name || "").trim();
-          if (!name) return;
-
-          if (name.toUpperCase() === "ANNOUNCEMENT") {
-            const desc = String(row.description || "").trim();
-            if (desc) {
-              desc.split("|").map((s) => s.trim()).filter(Boolean).forEach((msg) => announcements.push(msg));
-            }
-            return;
-          }
-
-          const tiers = [];
-          WEIGHT_TIERS.forEach((t) => {
-            const price = parsePrice(row[t.key]);
-            if (price !== null) {
-              tiers.push({ key: t.key, label: t.label, price });
-            }
-          });
-
-          if (tiers.length === 0) return; // Skip rows with no valid prices
-
-          const id = "prod_" + idx + "_" + name.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-          const imgUrl = row.image && /^https?:\/\//i.test(row.image) ? row.image : makeFallbackImage(name);
-
-          list.push({
-            id,
-            name,
-            description: String(row.description || ""),
-            image: imgUrl,
-            fallbackImage: makeFallbackImage(name),
-            tiers,
-            outOfStock: isOutOfStock(row.stock)
-          });
-
-          if (!selectedWeights[id] || !tiers.some((t) => t.key === selectedWeights[id])) {
-            selectedWeights[id] = tiers[0].key; // Default to smallest available weight
-          }
-        });
-
-        return { list, announcements };
-      }
-
-      // ==========================================
-      // 4. ANNOUNCEMENT TYPEWRITER (Intl.Segmenter)
-      // ==========================================
-      function segmentGraphemes(text) {
-        if (typeof Intl !== "undefined" && Intl.Segmenter) {
-          const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
-          return Array.from(segmenter.segment(text), (s) => s.segment);
-        }
-        return Array.from(text);
-      }
-
-      function startAnnouncementBanner(messages) {
-        const banner = document.getElementById("announcementBanner");
-        const textEl = document.getElementById("announcementText");
-        clearTimeout(announcementTimer);
-
-        if (!messages || messages.length === 0) {
-          banner.classList.remove("visible");
-          return;
-        }
-
-        banner.classList.add("visible");
-        let msgIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let graphemes = segmentGraphemes(messages[0]);
-
-        function tick() {
-          if (!isDeleting) {
-            charIndex++;
-            textEl.textContent = graphemes.slice(0, charIndex).join("");
-            if (charIndex >= graphemes.length) {
-              if (messages.length === 1) return; // Stay visible if single announcement
-              isDeleting = true;
-              announcementTimer = setTimeout(tick, 2400);
-              return;
-            }
-            announcementTimer = setTimeout(tick, 45);
-          } else {
-            charIndex--;
-            textEl.textContent = graphemes.slice(0, charIndex).join("");
-            if (charIndex <= 0) {
-              isDeleting = false;
-              msgIndex = (msgIndex + 1) % messages.length;
-              graphemes = segmentGraphemes(messages[msgIndex]);
-              announcementTimer = setTimeout(tick, 350);
-              return;
-            }
-            announcementTimer = setTimeout(tick, 22);
-          }
-        }
-
-        textEl.textContent = "";
-        tick();
-      }
-
-      // ==========================================
-      // 5. FETCH PRODUCTS FROM GOOGLE SHEETS
-      // ==========================================
-      function renderSkeletons() {
-        const grid = document.getElementById("productsGrid");
-        grid.innerHTML = Array.from({ length: 6 }).map(() => `
-          <div class="skeleton-card">
-            <div class="skeleton-box" style="width:100%; aspect-ratio:1/1;"></div>
-            <div style="padding:10px;">
-              <div class="skeleton-box" style="height:14px; width:80%; border-radius:4px; margin-bottom:8px;"></div>
-              <div class="skeleton-box" style="height:10px; width:100%; border-radius:4px; margin-bottom:6px;"></div>
-              <div class="skeleton-box" style="height:28px; width:100%; border-radius:6px; margin-top:10px;"></div>
-            </div>
-          </div>
-        `).join("");
-      }
-
-      function loadProducts() {
-        renderSkeletons();
-        const url = CONFIG.productsCsvUrl + (CONFIG.productsCsvUrl.includes("?") ? "&" : "?") + "t=" + Date.now();
-
-        if (!CONFIG.productsCsvUrl || CONFIG.productsCsvUrl.includes("[")) {
-          const parsed = buildProductObjects(SAMPLE_PRODUCTS);
-          products = parsed.list;
+          renderStats();
+          renderOrders();
           renderProducts();
+          toast("Synced!");
+        } catch (err) {
+          toast(err.message);
+          if (err.message.toLowerCase().includes("pin")) {
+            sessionStorage.removeItem("wff_admin_pin");
+            document.getElementById("lockScreen").style.display = "flex";
+          }
+        }
+      }
+
+      // ---- PARSE ORDER HELPERS ----
+      function parseOrderTotal(text) {
+        const m = String(text).match(/Total Amount:\*?\s*₹?\s*(\d+(?:\.\d+)?)/i) || String(text).match(/₹\s*(\d+)/g);
+        if (!m) return 0;
+        if (Array.isArray(m) && m[1]) return parseFloat(m[1]) || 0;
+        const last = m[m.length - 1];
+        return parseFloat(String(last).replace(/[^\d.]/g, "")) || 0;
+      }
+
+      function parseOrderPhone(text) {
+        const m = String(text).match(/Phone:\*?\s*(\d{10})/i) || String(text).match(/\b(\d{10})\b/);
+        return m ? m[1] : "";
+      }
+
+      // ---- 1. RENDER STATISTICS ----
+      function renderStats() {
+        let revenue = 0, validCount = 0, pendingCount = 0, todayRev = 0, todayCount = 0;
+        const todayStr = new Date().toDateString();
+        const productSales = {};
+        const statusCounts = { Pending: 0, Confirmed: 0, Packed: 0, Delivered: 0, Cancelled: 0 };
+
+        allOrders.forEach(o => {
+          const st = o.status || "Pending";
+          statusCounts[st] = (statusCounts[st] || 0) + 1;
+          if (st === "Pending") pendingCount++;
+
+          const amt = parseOrderTotal(o.rawText);
+          if (st !== "Cancelled") {
+            revenue += amt;
+            validCount++;
+            if (o.timestamp && new Date(o.timestamp).toDateString() === todayStr) {
+              todayRev += amt;
+              todayCount++;
+            }
+            // Extract line items like "1. Black Pepper (250g) x 2 = ₹460"
+            const lines = String(o.rawText).split("\n");
+            lines.forEach(line => {
+              const itemMatch = line.match(/^\d+\.\s*(.+?)\s*\([^)]+\)\s*x\s*(\d+)/i);
+              if (itemMatch) {
+                const pName = itemMatch[1].trim();
+                const qty = parseInt(itemMatch[2], 10) || 1;
+                productSales[pName] = (productSales[pName] || 0) + qty;
+              }
+            });
+          }
+        });
+
+        document.getElementById("kpiRevenue").textContent = "₹" + Math.round(revenue).toLocaleString("en-IN");
+        document.getElementById("kpiOrders").textContent = allOrders.length;
+        document.getElementById("kpiPending").textContent = `${pendingCount} pending`;
+        document.getElementById("kpiToday").textContent = "₹" + Math.round(todayRev).toLocaleString("en-IN");
+        document.getElementById("kpiTodayCount").textContent = `${todayCount} orders today`;
+        document.getElementById("kpiAov").textContent = "₹" + (validCount ? Math.round(revenue / validCount) : 0);
+
+        // Top Products Bar Chart
+        const sortedProds = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 6);
+        const maxProd = sortedProds[0] ? sortedProds[0][1] : 1;
+        document.getElementById("topProductsChart").innerHTML = sortedProds.length
+          ? sortedProds.map(([name, qty]) => `
+              <div class="bar-row">
+                <div class="bar-head"><span>${name}</span><span>${qty} packs</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width:${(qty / maxProd) * 100}%"></div></div>
+              </div>`).join("")
+          : `<p style="color:var(--muted);font-size:0.85rem;">No product sales data yet.</p>`;
+
+        // Status Breakdown
+        const total = allOrders.length || 1;
+        document.getElementById("statusChart").innerHTML = Object.entries(statusCounts).map(([st, cnt]) => `
+          <div class="bar-row">
+            <div class="bar-head"><span>${st}</span><span>${cnt}</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(cnt / total) * 100}%; background:${st === 'Cancelled' ? '#c62828' : st === 'Pending' ? '#f57c00' : '#1b5e20'}"></div></div>
+          </div>`).join("");
+      }
+
+      // ---- 2. RENDER ORDERS ----
+      function renderOrders() {
+        const q = document.getElementById("orderSearch").value.trim().toLowerCase();
+        const stFilter = document.getElementById("orderStatusFilter").value;
+
+        const filtered = allOrders.filter(o => {
+          if (stFilter !== "ALL" && o.status !== stFilter) return false;
+          if (q && !o.rawText.toLowerCase().includes(q)) return false;
+          return true;
+        });
+
+        const list = document.getElementById("ordersList");
+        if (!filtered.length) {
+          list.innerHTML = `<div class="panel" style="text-align:center;color:var(--muted);">No matching orders.</div>`;
           return;
         }
 
-        Papa.parse(url, {
-          download: true,
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const parsed = buildProductObjects(results.data || []);
-            if (parsed.list.length > 0) {
-              products = parsed.list;
-              startAnnouncementBanner(parsed.announcements);
-            } else {
-              const fallback = buildProductObjects(SAMPLE_PRODUCTS);
-              products = fallback.list;
-              showToast("Loaded sample catalog (sheet empty)", "default");
-            }
-            renderProducts();
-            syncCartBadges();
-          },
-          error: () => {
-            const fallback = buildProductObjects(SAMPLE_PRODUCTS);
-            products = fallback.list;
-            renderProducts();
-            showToast("Offline mode: showing Wayanad catalog", "default");
-          }
-        });
-      }
-
-      // ==========================================
-      // 6. CART LOGIC
-      // ==========================================
-      function getCartKey(productId, weightKey) {
-        return `${productId}__${weightKey}`;
-      }
-
-      function getCartQty(productId, weightKey) {
-        const item = cart[getCartKey(productId, weightKey)];
-        return item ? item.qty : 0;
-      }
-
-      function updateCart(productId, weightKey, delta) {
-        const product = products.find((p) => p.id === productId);
-        if (!product || product.outOfStock) return;
-        const tier = product.tiers.find((t) => t.key === weightKey);
-        if (!tier) return;
-
-        const key = getCartKey(productId, weightKey);
-        const currentQty = cart[key] ? cart[key].qty : 0;
-        const nextQty = currentQty + delta;
-
-        if (nextQty <= 0) {
-          delete cart[key];
-          showToast(`Removed ${product.name} (${tier.label})`);
-        } else {
-          cart[key] = {
-            productId: product.id,
-            name: product.name,
-            image: product.image,
-            fallbackImage: product.fallbackImage,
-            weightKey: tier.key,
-            weightLabel: tier.label,
-            price: tier.price,
-            qty: nextQty
-          };
-          if (currentQty === 0) {
-            showToast(`Added ${product.name} (${tier.label})`, "success");
-          }
-        }
-
-        saveJSON("wff_cart", cart);
-        syncCartBadges();
-        renderProducts(document.getElementById("searchInput").value);
-        if (document.getElementById("view-cart").classList.contains("active")) {
-          renderCart();
-        }
-        if (activeModalProductId === productId) {
-          renderModalAction(product);
-        }
-      }
-
-      function getCartTotals() {
-        const items = Object.values(cart);
-        let count = 0;
-        let amount = 0;
-        items.forEach((item) => {
-          count += item.qty;
-          amount += item.price * item.qty;
-        });
-        return { items, count, amount };
-      }
-
-      function syncCartBadges() {
-        const { count } = getCartTotals();
-        const badges = [
-          document.getElementById("desktopCartBadge"),
-          document.getElementById("mobileCartBadge")
-        ];
-        badges.forEach((b) => {
-          b.textContent = count;
-          b.classList.toggle("hidden", count === 0);
-        });
-
-        const floatingBtn = document.getElementById("floatingCartBtn");
-        const floatingBadge = document.getElementById("floatingCartBadge");
-        floatingBadge.textContent = count;
-        const isCartActive = document.getElementById("view-cart").classList.contains("active");
-        const isAdminActive = document.getElementById("view-admin").classList.contains("active");
-        floatingBtn.classList.toggle("visible", count > 0 && !isCartActive && !isAdminActive);
-      }
-
-      // ==========================================
-      // 7. SEARCH & PRODUCT GRID RENDERING
-      // ==========================================
-      function matchesSearch(product, rawQuery) {
-        const q = rawQuery.trim().toLowerCase();
-        if (!q) return true;
-
-        const haystack = (product.name + " " + product.description).toLowerCase();
-        const words = q.split(/\s+/).filter(Boolean);
-
-        return words.every((word) => {
-          if (haystack.includes(word)) return true;
-          // Check Malayalam/Manglish dictionary keys
-          for (const [dictKey, synonyms] of Object.entries(SEARCH_SYNONYMS)) {
-            if (dictKey.includes(word) || word.includes(dictKey)) {
-              if (synonyms.some((syn) => haystack.includes(syn))) return true;
-            }
-          }
-          return false;
-        });
-      }
-
-      function renderProducts(query = "") {
-        const grid = document.getElementById("productsGrid");
-        const filtered = products.filter((p) => matchesSearch(p, query));
-
-        if (filtered.length === 0) {
-          grid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1 / -1;">
-              <span class="empty-state-icon">🔍</span>
-              <h3>No matching products found</h3>
-              <p>Try searching for pepper, coffee, kappi, chukku, manjal, or kudampuli.</p>
-            </div>
-          `;
-          return;
-        }
-
-        grid.innerHTML = filtered.map((product) => {
-          const weightKey = selectedWeights[product.id] || product.tiers[0].key;
-          const tier = product.tiers.find((t) => t.key === weightKey) || product.tiers[0];
-          const qty = getCartQty(product.id, tier.key);
-
-          const actionHtml = product.outOfStock
-            ? ""
-            : qty > 0
-              ? `<div class="qty-pill" data-stop-card="true">
-                  <button type="button" data-action="dec" data-id="${product.id}" data-weight="${tier.key}" aria-label="Decrease quantity">&minus;</button>
-                  <span>${qty}</span>
-                  <button type="button" data-action="inc" data-id="${product.id}" data-weight="${tier.key}" aria-label="Increase quantity">+</button>
-                </div>`
-              : `<button type="button" class="btn-plus" data-stop-card="true" data-action="inc" data-id="${product.id}" data-weight="${tier.key}" aria-label="Add to cart">+</button>`;
-
-          const optionsHtml = product.tiers.map((t) =>
-            `<option value="${t.key}" ${t.key === tier.key ? "selected" : ""}>${t.label} — ₹${t.price}</option>`
-          ).join("");
-
+        list.innerHTML = filtered.map(o => {
+          const dateLabel = o.timestamp ? new Date(o.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "Row " + o.rowNumber;
+          const phone = parseOrderPhone(o.rawText);
           return `
-            <article class="product-card ${product.outOfStock ? "out-of-stock" : ""}" data-card-id="${product.id}">
-              <div class="product-img-wrap">
-                <img
-                  class="product-img"
-                  src="${escapeHtml(product.image)}"
-                  alt="${escapeHtml(product.name)}"
-                  loading="lazy"
-                  onerror="this.onerror=null;this.src='${product.fallbackImage}';"
-                />
-                ${product.outOfStock ? `<div class="oos-badge"><span>OUT OF STOCK</span></div>` : ""}
-                <div class="card-action-float">${actionHtml}</div>
+            <div class="order-card status-${o.status}">
+              <div class="order-top">
+                <span class="order-meta">Row #${o.rowNumber} • ${dateLabel}</span>
+                <select class="input" style="width:auto;padding:5px 8px;font-size:0.8rem;font-weight:700;" data-status-row="${o.rowNumber}">
+                  ${["Pending","Confirmed","Packed","Delivered","Cancelled"].map(s => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
+                </select>
               </div>
-              <div class="product-body">
-                <h3 class="product-title" title="${escapeHtml(product.name)}">${escapeHtml(product.name)}</h3>
-                <p class="product-desc">${escapeHtml(product.description)}</p>
-                <div class="product-controls">
-                  <select
-                    class="size-select"
-                    data-stop-card="true"
-                    data-size-id="${product.id}"
-                    ${product.outOfStock ? "disabled" : ""}
-                    aria-label="Select weight for ${escapeHtml(product.name)}"
-                  >
-                    ${optionsHtml}
-                  </select>
-                  <div class="price-row">
-                    <span class="product-price">₹${tier.price}</span>
-                    <span class="unit-tag">${tier.label}</span>
-                  </div>
-                </div>
+              <pre class="order-pre">${o.rawText.replace(/</g, "&lt;")}</pre>
+              <div class="order-actions">
+                ${phone ? `<a class="btn btn-primary btn-sm" style="text-decoration:none;" target="_blank" href="https://wa.me/91${phone}">WhatsApp</a>` : ""}
+                <button type="button" class="btn btn-outline btn-sm" data-edit-order="${o.rowNumber}">Edit</button>
+                <button type="button" class="btn btn-danger btn-sm" data-del-order="${o.rowNumber}">Delete</button>
               </div>
-            </article>
-          `;
+            </div>`;
         }).join("");
       }
 
-      // ==========================================
-      // 8. PRODUCT DETAILS BOTTOM-SHEET MODAL
-      // ==========================================
-      function openProductModal(productId) {
-        const product = products.find((p) => p.id === productId);
-        if (!product) return;
+      // ---- 3. RENDER PRODUCTS ----
+      function renderProducts() {
+        const q = document.getElementById("productSearch").value.trim().toLowerCase();
+        const filtered = allProducts.filter(p => String(p.name || "").toLowerCase().includes(q));
+        const list = document.getElementById("productsList");
 
-        activeModalProductId = productId;
-        const imgEl = document.getElementById("modalProductImg");
-        imgEl.src = product.image;
-        imgEl.alt = product.name;
-        imgEl.className = "modal-product-img" + (product.outOfStock ? " oos" : "");
-        imgEl.onerror = () => { imgEl.onerror = null; imgEl.src = product.fallbackImage; };
+        list.innerHTML = filtered.map(p => {
+          const out = ["out", "out of stock", "no", "0"].includes(String(p.stock || "").trim().toLowerCase());
+          const prices = [
+            p.p100 ? `100g: ₹${p.p100}` : "",
+            p.p250 ? `250g: ₹${p.p250}` : "",
+            p.p500 ? `500g: ₹${p.p500}` : "",
+            p.p1000 ? `1kg: ₹${p.p1000}` : ""
+          ].filter(Boolean).join(" • ");
 
-        document.getElementById("modalProductTitle").textContent = product.name;
-        document.getElementById("modalProductDesc").textContent = product.description;
-
-        const selectEl = document.getElementById("modalSizeSelect");
-        const currentWeight = selectedWeights[product.id] || product.tiers[0].key;
-        selectEl.innerHTML = product.tiers.map((t) =>
-          `<option value="${t.key}" ${t.key === currentWeight ? "selected" : ""}>${t.label} — ₹${t.price}</option>`
-        ).join("");
-        selectEl.disabled = product.outOfStock;
-
-        syncModalPriceAndAction(product);
-        document.getElementById("productModalBackdrop").classList.add("open");
-        document.body.style.overflow = "hidden";
-      }
-
-      function syncModalPriceAndAction(product) {
-        const weightKey = selectedWeights[product.id] || product.tiers[0].key;
-        const tier = product.tiers.find((t) => t.key === weightKey) || product.tiers[0];
-        document.getElementById("modalProductPrice").textContent = `₹${tier.price}`;
-        renderModalAction(product);
-      }
-
-      function renderModalAction(product) {
-        const container = document.getElementById("modalActionContainer");
-        const weightKey = selectedWeights[product.id] || product.tiers[0].key;
-        const tier = product.tiers.find((t) => t.key === weightKey) || product.tiers[0];
-        const qty = getCartQty(product.id, tier.key);
-
-        if (product.outOfStock) {
-          container.innerHTML = `<button type="button" class="btn-primary-full" disabled>Out of Stock</button>`;
-          return;
-        }
-
-        if (qty > 0) {
-          container.innerHTML = `
-            <div class="modal-qty-full">
-              <button type="button" id="modalDecBtn" aria-label="Decrease quantity">&minus;</button>
-              <span>${qty} in Cart (${tier.label})</span>
-              <button type="button" id="modalIncBtn" aria-label="Increase quantity">+</button>
-            </div>
-          `;
-          document.getElementById("modalDecBtn").onclick = () => updateCart(product.id, tier.key, -1);
-          document.getElementById("modalIncBtn").onclick = () => updateCart(product.id, tier.key, 1);
-        } else {
-          container.innerHTML = `
-            <button type="button" id="modalAddBtn" class="btn-primary-full btn-green-full">
-              Add to Cart — ₹${tier.price}
-            </button>
-          `;
-          document.getElementById("modalAddBtn").onclick = () => updateCart(product.id, tier.key, 1);
-        }
-      }
-
-      function closeProductModal() {
-        activeModalProductId = null;
-        document.getElementById("productModalBackdrop").classList.remove("open");
-        document.body.style.overflow = "";
-      }
-
-      // ==========================================
-      // 9. CART VIEW & CHECKOUT
-      // ==========================================
-      function renderCart() {
-        const { items, count, amount } = getCartTotals();
-        const container = document.getElementById("cartContainer");
-        const clearBtn = document.getElementById("clearCartBtn");
-
-        clearBtn.style.display = items.length > 0 ? "inline-block" : "none";
-
-        if (items.length === 0) {
-          container.innerHTML = `
-            <div class="empty-state">
-              <span class="empty-state-icon">🛒</span>
-              <h3>Your cart is empty</h3>
-              <p>Add farm-fresh Wayanad spices &amp; coffee to get started.</p>
-              <button type="button" class="btn-outline" id="goShopBtn">Browse Products</button>
-            </div>
-          `;
-          document.getElementById("goShopBtn").onclick = () => switchTab("products");
-          return;
-        }
-
-        const listHtml = items.map((item) => `
-          <div class="cart-item">
-            <img
-              class="cart-item-img"
-              src="${escapeHtml(item.image)}"
-              alt="${escapeHtml(item.name)}"
-              onerror="this.onerror=null;this.src='${item.fallbackImage || makeFallbackImage(item.name)}';"
-            />
-            <div class="cart-item-info">
-              <h4 class="cart-item-title">${escapeHtml(item.name)}</h4>
-              <div class="cart-item-meta">${escapeHtml(item.weightLabel)} &times; ₹${item.price}</div>
-              <div class="cart-item-price">₹${item.price * item.qty}</div>
-            </div>
-            <div class="qty-pill">
-              <button type="button" data-cart-dec="${item.productId}" data-cart-weight="${item.weightKey}" aria-label="Decrease">&minus;</button>
-              <span>${item.qty}</span>
-              <button type="button" data-cart-inc="${item.productId}" data-cart-weight="${item.weightKey}" aria-label="Increase">+</button>
-            </div>
-          </div>
-        `).join("");
-
-        container.innerHTML = `
-          <div class="cart-list">${listHtml}</div>
-          <div class="cart-summary-card">
-            <div class="summary-row">
-              <span>Items (${count})</span>
-              <span>₹${amount}</span>
-            </div>
-            <div class="summary-row total">
-              <span>Order Total</span>
-              <span>₹${amount}</span>
-            </div>
-            <button type="button" id="openCheckoutBtn" class="btn-primary-full">
-              Proceed to Checkout &rarr;
-            </button>
-          </div>
-        `;
-
-        document.getElementById("openCheckoutBtn").onclick = openCheckoutModal;
-      }
-
-      function openCheckoutModal() {
-        const { count, amount } = getCartTotals();
-        if (count === 0) {
-          showToast("Your cart is empty", "error");
-          return;
-        }
-
-        const saved = loadJSON("wff_customer", { name: "", phone: "", address: "" });
-        document.getElementById("custName").value = saved.name || "";
-        document.getElementById("custPhone").value = saved.phone || "";
-        document.getElementById("custAddress").value = saved.address || "";
-        document.getElementById("checkoutMiniSummary").innerHTML = `
-          <span>${count} item${count > 1 ? "s" : ""}</span>
-          <span>Total: ₹${amount}</span>
-        `;
-
-        document.getElementById("checkoutModalBackdrop").classList.add("open");
-        document.body.style.overflow = "hidden";
-      }
-
-      function closeCheckoutModal() {
-        document.getElementById("checkoutModalBackdrop").classList.remove("open");
-        document.body.style.overflow = "";
-      }
-
-      function handleCheckoutSubmit(e) {
-        e.preventDefault();
-        const name = document.getElementById("custName").value.trim();
-        const phoneDigits = document.getElementById("custPhone").value.replace(/\D/g, "");
-        const address = document.getElementById("custAddress").value.trim();
-
-        if (!name) {
-          showToast("Please enter your name", "error");
-          return;
-        }
-        if (!/^\d{10}$/.test(phoneDigits)) {
-          showToast("Please enter a valid 10-digit mobile number", "error");
-          return;
-        }
-        if (!address) {
-          showToast("Please enter your delivery address", "error");
-          return;
-        }
-
-        const { items, amount } = getCartTotals();
-        if (items.length === 0) {
-          showToast("Your cart is empty", "error");
-          return;
-        }
-
-        // Save customer details for auto-fill
-        saveJSON("wff_customer", { name, phone: phoneDigits, address });
-        document.getElementById("orderPhoneInput").value = phoneDigits;
-
-        // Build formatted order message
-        const lines = items.map((it, i) =>
-          `${i + 1}. ${it.name} (${it.weightLabel}) x ${it.qty} = ₹${it.price * it.qty}`
-        ).join("\n");
-
-        const orderSummary =
-`🌿 *New Order — ${CONFIG.brandName}*
-------------------------
-*Name:* ${name}
-*Phone:* ${phoneDigits}
-*Address:* ${address}
-------------------------
-*Items:*
-${lines}
-------------------------
-*Total Amount:* ₹${amount}`;
-
-        // 1. Silent submission to Google Form (no-cors)
-        try {
-          const formData = new URLSearchParams();
-          formData.append(CONFIG.formEntryId, orderSummary);
-          fetch(CONFIG.formResponseUrl, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: formData.toString()
-          }).catch(() => {});
-        } catch { /* ignore background form errors */ }
-
-        // 2. Open WhatsApp with pre-filled order message
-        const waUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(orderSummary)}`;
-        window.open(waUrl, "_blank", "noopener");
-
-        // Clear cart and close modal
-        cart = {};
-        saveJSON("wff_cart", cart);
-        syncCartBadges();
-        closeCheckoutModal();
-        renderCart();
-        renderProducts(document.getElementById("searchInput").value);
-        showToast("Order sent! Opening WhatsApp...", "success");
-      }
-
-      // ==========================================
-      // 10. MY ORDERS TAB (RESPONSES CSV LOOKUP)
-      // ==========================================
-      function lookupOrders(phoneRaw) {
-        const digits = String(phoneRaw || "").replace(/\D/g, "");
-        const last10 = digits.slice(-10);
-        const listEl = document.getElementById("ordersList");
-
-        if (last10.length !== 10) {
-          listEl.innerHTML = `
-            <div class="empty-state">
-              <span class="empty-state-icon">📱</span>
-              <h3>Enter your 10-digit mobile number</h3>
-              <p>We will fetch your past orders placed with ${CONFIG.brandName}.</p>
-            </div>
-          `;
-          return;
-        }
-
-        listEl.innerHTML = `
-          <div class="empty-state">
-            <span class="empty-state-icon">⏳</span>
-            <h3>Fetching your orders...</h3>
-            <p>Checking records for ${last10}</p>
-          </div>
-        `;
-
-        const url = CONFIG.ordersCsvUrl + (CONFIG.ordersCsvUrl.includes("?") ? "&" : "?") + "t=" + Date.now();
-
-        Papa.parse(url, {
-          download: true,
-          header: false,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const rows = results.data || [];
-            if (rows.length <= 1) {
-              renderNoOrders(last10);
-              return;
-            }
-
-            const matched = [];
-            // Skip header row (index 0)
-            for (let i = 1; i < rows.length; i++) {
-              const row = rows[i];
-              const joined = row.join(" ");
-              // Check if any 10+ digit sequence in the row ends with last10
-              const phoneMatches = joined.match(/\d[\d\s\-+]{8,}\d/g) || [];
-              const found = phoneMatches.some((m) => m.replace(/\D/g, "").slice(-10) === last10)
-                || joined.replace(/\D/g, "").includes(last10);
-
-              if (found) {
-                const timestamp = row[0] || "Recent Order";
-                const details = row.slice(1).filter(Boolean).join("\n\n").trim();
-                matched.push({ timestamp, details: details || joined });
-              }
-            }
-
-            if (matched.length === 0) {
-              renderNoOrders(last10);
-              return;
-            }
-
-            // Show newest orders first
-            matched.reverse();
-            listEl.innerHTML = matched.map((ord) => `
-              <article class="order-card">
-                <div class="order-card-top">
-                  <span class="order-date">🗓 ${escapeHtml(ord.timestamp)}</span>
-                  <span class="order-status-pill">Recorded</span>
-                </div>
-                <pre class="order-body-pre">${escapeHtml(ord.details)}</pre>
-              </article>
-            `).join("");
-          },
-          error: () => {
-            listEl.innerHTML = `
-              <div class="empty-state">
-                <span class="empty-state-icon">⚠️</span>
-                <h3>Could not load orders</h3>
-                <p>Please check your internet connection and try again.</p>
+          return `
+            <div class="prod-row">
+              <div class="prod-info">
+                <h4>${p.name} <span class="${out ? "badge-out" : "badge-in"}">${out ? "Out of Stock" : "In Stock"}</span></h4>
+                <div class="prod-prices">${prices || "No prices set"}</div>
               </div>
-            `;
-          }
-        });
+              <div class="prod-actions">
+                <button type="button" class="btn btn-outline btn-sm" data-toggle-stock="${p.rowNumber}" data-next-stock="${out ? "in" : "out"}">${out ? "Mark In Stock" : "Mark Out"}</button>
+                <button type="button" class="btn btn-primary btn-sm" data-edit-prod="${p.rowNumber}">Edit</button>
+                <button type="button" class="btn btn-danger btn-sm" data-del-prod="${p.rowNumber}">Delete</button>
+              </div>
+            </div>`;
+        }).join("");
       }
 
-      function renderNoOrders(last10) {
-        document.getElementById("ordersList").innerHTML = `
-          <div class="empty-state">
-            <span class="empty-state-icon">📦</span>
-            <h3>No orders found for ${escapeHtml(last10)}</h3>
-            <p>Orders placed via this store will appear here automatically.</p>
-          </div>
-        `;
-      }
+      // ---- EVENTS ----
+      document.getElementById("pinForm").addEventListener("submit", e => {
+        e.preventDefault();
+        adminPin = document.getElementById("pinInput").value.trim();
+        syncAll();
+      });
 
-      // ==========================================
-      // 11. NAVIGATION & SHARE
-      // ==========================================
-      function switchTab(tabName) {
-        document.querySelectorAll(".view-section").forEach((s) => s.classList.remove("active"));
-        const target = document.getElementById(`view-${tabName}`);
-        if (target) target.classList.add("active");
+      document.getElementById("refreshBtn").addEventListener("click", syncAll);
 
-        document.querySelectorAll("[data-tab]").forEach((btn) => {
-          btn.classList.toggle("active", btn.getAttribute("data-tab") === tabName);
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById("view-" + btn.dataset.tab).classList.add("active");
         });
+      });
 
-        if (tabName === "cart") {
-          renderCart();
-        } else if (tabName === "orders") {
-          const input = document.getElementById("orderPhoneInput");
-          if (!input.value) {
-            const saved = loadJSON("wff_customer", {});
-            if (saved.phone) input.value = saved.phone;
-          }
-          lookupOrders(input.value);
+      document.getElementById("orderSearch").addEventListener("input", renderOrders);
+      document.getElementById("orderStatusFilter").addEventListener("change", renderOrders);
+      document.getElementById("productSearch").addEventListener("input", renderProducts);
+
+      // Order Actions
+      document.getElementById("ordersList").addEventListener("change", async e => {
+        const sel = e.target.closest("[data-status-row]");
+        if (!sel) return;
+        const rowNumber = Number(sel.dataset.statusRow);
+        try {
+          await apiCall({ action: "updateOrder", order: { rowNumber, status: sel.value } });
+          toast("Order status updated!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+
+      document.getElementById("ordersList").addEventListener("click", async e => {
+        const editBtn = e.target.closest("[data-edit-order]");
+        if (editBtn) {
+          const ord = allOrders.find(o => o.rowNumber === Number(editBtn.dataset.editOrder));
+          if (!ord) return;
+          document.getElementById("oRowNumber").value = ord.rowNumber;
+          document.getElementById("oStatus").value = ord.status;
+          document.getElementById("oRawText").value = ord.rawText;
+          document.getElementById("orderModal").classList.add("open");
+          return;
         }
-
-        syncCartBadges();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      async function shareStore() {
-        const shareData = {
-          title: CONFIG.brandName,
-          text: `${CONFIG.brandName} — ${CONFIG.tagline}. Order fresh spices & coffee online:`,
-          url: window.location.href
-        };
-
-        if (navigator.share) {
+        const delBtn = e.target.closest("[data-del-order]");
+        if (delBtn && confirm("Delete this order from Google Sheets permanently?")) {
           try {
-            await navigator.share(shareData);
-            return;
-          } catch (err) {
-            if (err && err.name === "AbortError") return;
-          }
+            await apiCall({ action: "deleteOrder", rowNumber: Number(delBtn.dataset.delOrder) });
+            toast("Order deleted");
+            syncAll();
+          } catch (err) { toast(err.message); }
         }
+      });
 
-        // WhatsApp fallback
-        const waShare = `https://wa.me/?text=${encodeURIComponent(shareData.text + " " + shareData.url)}`;
-        window.open(waShare, "_blank", "noopener");
-      }
+      document.getElementById("orderEditForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        try {
+          await apiCall({
+            action: "updateOrder",
+            order: {
+              rowNumber: Number(document.getElementById("oRowNumber").value),
+              status: document.getElementById("oStatus").value,
+              rawText: document.getElementById("oRawText").value
+            }
+          });
+          document.getElementById("orderModal").classList.remove("open");
+          toast("Order saved to Sheet!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+      document.getElementById("closeOrderModal").onclick = () => document.getElementById("orderModal").classList.remove("open");
 
-      // ==========================================
-      // 12. EVENT LISTENERS
-      // ==========================================
-      function bindEvents() {
-        // Admin Sheet placeholder links
-        document.getElementById("adminProductsSheetLink").href = CONFIG.productsEditSheetUrl;
-        document.getElementById("adminResponsesSheetLink").href = CONFIG.responsesEditSheetUrl;
+      // Product & Announcement Actions
+      document.getElementById("saveAnnouncementBtn").addEventListener("click", async () => {
+        const desc = document.getElementById("announcementInput").value.trim();
+        try {
+          await apiCall({
+            action: "saveProduct",
+            product: {
+              rowNumber: announcementRow ? announcementRow.rowNumber : null,
+              name: "ANNOUNCEMENT",
+              description: desc,
+              image: "", p100: "", p250: "", p500: "", p1000: "", stock: "in"
+            }
+          });
+          toast("Announcement updated!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
 
-        // Tab buttons (Desktop & Mobile)
-        document.querySelectorAll("[data-tab]").forEach((btn) => {
-          btn.addEventListener("click", () => switchTab(btn.getAttribute("data-tab")));
-        });
+      document.getElementById("addProductBtn").addEventListener("click", () => {
+        document.getElementById("prodModalTitle").textContent = "Add New Product";
+        document.getElementById("productForm").reset();
+        document.getElementById("pRowNumber").value = "";
+        document.getElementById("productModal").classList.add("open");
+      });
 
-        // Floating Cart button
-        document.getElementById("floatingCartBtn").addEventListener("click", () => switchTab("cart"));
+      document.getElementById("productsList").addEventListener("click", async e => {
+        const toggleBtn = e.target.closest("[data-toggle-stock]");
+        if (toggleBtn) {
+          try {
+            await apiCall({
+              action: "toggleStock",
+              rowNumber: Number(toggleBtn.dataset.toggleStock),
+              stock: toggleBtn.dataset.nextStock
+            });
+            toast("Stock updated!");
+            syncAll();
+          } catch (err) { toast(err.message); }
+          return;
+        }
+        const editBtn = e.target.closest("[data-edit-prod]");
+        if (editBtn) {
+          const p = allProducts.find(x => x.rowNumber === Number(editBtn.dataset.editProd));
+          if (!p) return;
+          document.getElementById("prodModalTitle").textContent = "Edit Product";
+          document.getElementById("pRowNumber").value = p.rowNumber;
+          document.getElementById("pName").value = p.name || "";
+          document.getElementById("pDesc").value = p.description || "";
+          document.getElementById("pImage").value = p.image || "";
+          document.getElementById("p100").value = p.p100 || "";
+          document.getElementById("p250").value = p.p250 || "";
+          document.getElementById("p500").value = p.p500 || "";
+          document.getElementById("p1000").value = p.p1000 || "";
+          const out = ["out", "out of stock", "no", "0"].includes(String(p.stock || "").trim().toLowerCase());
+          document.getElementById("pStock").value = out ? "out" : "in";
+          document.getElementById("productModal").classList.add("open");
+          return;
+        }
+        const delBtn = e.target.closest("[data-del-prod]");
+        if (delBtn && confirm("Delete this product from Google Sheets?")) {
+          try {
+            await apiCall({ action: "deleteProduct", rowNumber: Number(delBtn.dataset.delProd) });
+            toast("Product deleted");
+            syncAll();
+          } catch (err) { toast(err.message); }
+        }
+      });
 
-        // Share buttons
-        document.getElementById("mobileShareBtn").addEventListener("click", shareStore);
-        document.getElementById("desktopShareBtn").addEventListener("click", shareStore);
+      document.getElementById("productForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        try {
+          await apiCall({
+            action: "saveProduct",
+            product: {
+              rowNumber: document.getElementById("pRowNumber").value || null,
+              name: document.getElementById("pName").value.trim(),
+              description: document.getElementById("pDesc").value.trim(),
+              image: document.getElementById("pImage").value.trim(),
+              p100: document.getElementById("p100").value,
+              p250: document.getElementById("p250").value,
+              p500: document.getElementById("p500").value,
+              p1000: document.getElementById("p1000").value,
+              stock: document.getElementById("pStock").value
+            }
+          });
+          document.getElementById("productModal").classList.remove("open");
+          toast("Product saved to Sheet!");
+          syncAll();
+        } catch (err) { toast(err.message); }
+      });
+      document.getElementById("closeProdModal").onclick = () => document.getElementById("productModal").classList.remove("open");
 
-        // Search Bar + Secret Admin Trigger
-        const searchInput = document.getElementById("searchInput");
-        const searchClear = document.getElementById("searchClear");
-
-        searchInput.addEventListener("input", (e) => {
-          const val = e.target.value;
-          searchClear.classList.toggle("visible", val.length > 0);
-
-          // Secret Admin Home Screen Trigger
-          if (val.trim().toLowerCase() === "admin") {
-            searchInput.value = "";
-            searchClear.classList.remove("visible");
-            renderProducts("");
-            switchTab("admin");
-            showToast("Admin Control Center opened", "success");
-            return;
-          }
-
-          renderProducts(val);
-        });
-
-        searchClear.addEventListener("click", () => {
-          searchInput.value = "";
-          searchClear.classList.remove("visible");
-          renderProducts("");
-          searchInput.focus();
-        });
-
-        // Back to Store from Admin
-        document.getElementById("backToStoreBtn").addEventListener("click", () => switchTab("products"));
-
-        // Product Grid Delegation (Card click, +/- buttons, size dropdown)
-        const grid = document.getElementById("productsGrid");
-
-        grid.addEventListener("click", (e) => {
-          const actionBtn = e.target.closest("[data-action]");
-          if (actionBtn) {
-            e.stopPropagation();
-            const id = actionBtn.getAttribute("data-id");
-            const weight = actionBtn.getAttribute("data-weight");
-            const delta = actionBtn.getAttribute("data-action") === "inc" ? 1 : -1;
-            updateCart(id, weight, delta);
-            return;
-          }
-
-          if (e.target.closest("[data-stop-card]")) {
-            e.stopPropagation();
-            return;
-          }
-
-          const card = e.target.closest("[data-card-id]");
-          if (card) {
-            openProductModal(card.getAttribute("data-card-id"));
-          }
-        });
-
-        grid.addEventListener("change", (e) => {
-          const select = e.target.closest("[data-size-id]");
-          if (select) {
-            const id = select.getAttribute("data-size-id");
-            selectedWeights[id] = select.value;
-            renderProducts(searchInput.value);
-          }
-        });
-
-        // Product Modal events
-        document.getElementById("closeProductModal").addEventListener("click", closeProductModal);
-        document.getElementById("productModalBackdrop").addEventListener("click", (e) => {
-          if (e.target.id === "productModalBackdrop") closeProductModal();
-        });
-        document.getElementById("modalSizeSelect").addEventListener("change", (e) => {
-          if (!activeModalProductId) return;
-          selectedWeights[activeModalProductId] = e.target.value;
-          const product = products.find((p) => p.id === activeModalProductId);
-          if (product) {
-            syncModalPriceAndAction(product);
-            renderProducts(searchInput.value);
-          }
-        });
-
-        // Cart Delegation
-        document.getElementById("cartContainer").addEventListener("click", (e) => {
-          const decBtn = e.target.closest("[data-cart-dec]");
-          if (decBtn) {
-            updateCart(decBtn.getAttribute("data-cart-dec"), decBtn.getAttribute("data-cart-weight"), -1);
-            return;
-          }
-          const incBtn = e.target.closest("[data-cart-inc]");
-          if (incBtn) {
-            updateCart(incBtn.getAttribute("data-cart-inc"), incBtn.getAttribute("data-cart-weight"), 1);
-          }
-        });
-
-        document.getElementById("clearCartBtn").addEventListener("click", () => {
-          cart = {};
-          saveJSON("wff_cart", cart);
-          syncCartBadges();
-          renderCart();
-          renderProducts(searchInput.value);
-          showToast("Cart cleared");
-        });
-
-        // Checkout Modal events
-        document.getElementById("closeCheckoutModal").addEventListener("click", closeCheckoutModal);
-        document.getElementById("checkoutModalBackdrop").addEventListener("click", (e) => {
-          if (e.target.id === "checkoutModalBackdrop") closeCheckoutModal();
-        });
-        document.getElementById("checkoutForm").addEventListener("submit", handleCheckoutSubmit);
-
-        // Orders Lookup Form
-        document.getElementById("orderLookupForm").addEventListener("submit", (e) => {
-          e.preventDefault();
-          lookupOrders(document.getElementById("orderPhoneInput").value);
-        });
-
-        // Escape key closes modals
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") {
-            closeProductModal();
-            closeCheckoutModal();
-          }
-        });
-      }
-
-      // ==========================================
-      // 13. INITIALIZE
-      // ==========================================
-      bindEvents();
-      syncCartBadges();
-      loadProducts();
+      // Auto-login if PIN already saved in session
+      if (adminPin) syncAll();
     })();
   </script>
 </body>

@@ -2534,13 +2534,11 @@ ${lines}
           const val = e.target.value;
           searchClear.classList.toggle("visible", val.length > 0);
 
-          // Secret Admin Home Screen Trigger
+          // Redirect directly to admin.html
           if (val.trim().toLowerCase() === "admin") {
             searchInput.value = "";
             searchClear.classList.remove("visible");
-            renderProducts("");
-            switchTab("admin");
-            showToast("Admin Control Center opened", "success");
+            window.location.href = "admin.html";
             return;
           }
 
